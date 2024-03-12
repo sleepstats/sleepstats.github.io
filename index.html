@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sleep Stats - Login</title>
+  <link rel="stylesheet" href="./assets/styles.css" />
+  <script src="./assets/main.js"></script>
+</head>
+
+<body>
+
+  <div class="row">
+
+    <div class="column" id="logo">
+      <img src=".\assets\img\SleepStats.png" alt="SleepStats logo">
+      <p>Find out yout sleeping habits</p>
+    </div>
+
+    <div class="column2">
+
+      <form action="" class="login_form" onsubmit="signIn(event)" id="signInForm">
+
+        <div class="login_content">
+
+          <div class="login_box">
+            <p>
+            <h1 class="login_title"><i>Login</i></h1>
+            </p>
+          </div>
+          <div class="login__box-input">
+            <input type="email" required class="login__input" id="email" placeholder=" ">
+            <label for="login-email" class="login__label">Email</label>
+          </div>
+          <div class="login__box-input">
+            <input type="password" required class="login__input" id="password" placeholder=" ">
+            <label for="login-pass" class="login__label">Password</label>
+          </div>
+          <input type="submit" value="Login" class="login__button" />
+          <p>Don't have an account? <a href="./assets/Register/register.html"><i>Register</i></a></p>
+      </form>
+    </div>
+  </div>
+
+  <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
+
+    // Your web app's Firebase configuration
+    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+    const firebaseConfig = {
+      apiKey: "AIzaSyD7g7c4PH_jNPzB7U60B4XsLPJp2wZugpY",
+      authDomain: "sleepstats-2cf66.firebaseapp.com",
+      projectId: "sleepstats-2cf66",
+      storageBucket: "sleepstats-2cf66.appspot.com",
+      messagingSenderId: "439404168878",
+      appId: "1:439404168878:web:ee4a9cec62ee7c8dd20f3f",
+      measurementId: "G-NL1JZWTM1B"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    window.auth = auth;
+    window.SignIn = signInWithEmailAndPassword;
+
+  </script>
+
+  <script>
+    function signIn(event) {
+      event.preventDefault(); // Prevent form submission
+
+      var email = document.getElementById("email").value;
+      var password = document.getElementById("password").value;
+
+      window.SignIn(window.auth, email, password)
+
+        .then((userCredential) => {
+          // Signed in 
+          const user = userCredential.user;
+          console.log(user);
+          // alert("signed in!");
+          window.location.href = "./assets/dashboard/dashboard.html";
+          // ...
+    })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          console.log(errorCode, errorMessage);
+        });
+      }
+  </script>
+</body>

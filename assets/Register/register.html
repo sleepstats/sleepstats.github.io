@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sleep Stats - Login</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <form action="" onsubmit="Register(event)">
+    <fieldset>
+      <label for="first-name">Enter Your First Name: <input id="first-name" name="first-name" type="text"
+          required /></label>
+      <label for="last-name">Enter Your Last Name: <input id="last-name" name="last-name" type="text"
+          required /></label>
+      <label for="email">Enter Your Email: <input id="email" name="email" type="email" required /></label>
+      <label for="password">Create a New Password: <input id="password" name="password" type="password"
+          required /></label>
+    </fieldset>
+    <fieldset>
+      <label for="age">Input your age (years): <input id="age" type="number" name="age" min="13" max="120" /></label>
+    </fieldset>
+    <input type="submit" value="Submit" onclick="" />
+    <a href="C:\Users\KS\Documents\(0)SCHOOL\(0)CTU\SleepStats\index.html">I have an account</a>
+  </form>
+
+  <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
+
+    // Your web app's Firebase configuration
+    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+    const firebaseConfig = {
+      apiKey: "AIzaSyD7g7c4PH_jNPzB7U60B4XsLPJp2wZugpY",
+      authDomain: "sleepstats-2cf66.firebaseapp.com",
+      projectId: "sleepstats-2cf66",
+      storageBucket: "sleepstats-2cf66.appspot.com",
+      messagingSenderId: "439404168878",
+      appId: "1:439404168878:web:ee4a9cec62ee7c8dd20f3f",
+      measurementId: "G-NL1JZWTM1B"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    window.auth = auth;
+    window.register = createUserWithEmailAndPassword;
+
+  </script>
+  <script>
+
+    function Register(event) {
+      event.preventDefault();
+
+      var firstName = document.getElementById("first-name").value;
+      var lastName = document.getElementById("last-name").value;
+      var email = document.getElementById("email").value;
+      var pass = document.getElementById("password").value;
+      var age = document.getElementById("age").value;
+      window.register(window.auth, email, pass)
+
+        .then((userCredential) => {
+          // Signed up 
+          const user = userCredential.user;
+          console.log(user);
+          alert("Registered!");
+          window.location.href = "../../";
+          // ...
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+
+          console.log(errorCode, errorMessage);
+          // ..
+
+          console.log(errorCode, errorMessage);
+          if (errorCode === "auth/email-already-in-use") {
+            alert("This email is already in use. Please use a different email address.");
+          } else {
+            alert("An error occurred during registration. Please try again later.");
+          }
+
+        });
+
+    }
+  </script>
+
+</body>
+
+</html>
