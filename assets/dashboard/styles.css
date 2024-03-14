@@ -6,7 +6,7 @@
 }
 
 .tab button {
-    background-color: #f1f1f1;
+    background-color: inherit;
     float: left;
     border: none;
     outline: none;
@@ -27,14 +27,27 @@
     display: none;
     padding: 20px;
     border-top: none;
+    /* opacity: 0; */
+    /* width: 0; */
+    /* height: 0;/ */
+    /* overflow: hidden; */
+}
+
+.tabactive {
+    width: auto;
+    height: auto;
 }
 
 .tabcontent h3 {
     margin-top: 0;
 }
 
+#outBtn button {
+    margin: 0 auto;
+}
+
 #Tab3 {
-    text-align: center !important;
+    text-align: center;
 }
 
 #Tab3 h3 {
@@ -49,11 +62,15 @@
     text-align: center;
     display: block;
     font-size: 16px;
-    margin: 0 auto;
     margin-top: 20px;
     cursor: pointer;
     border-radius: 5px;
-    position: absolute;
+}
+
+#calendar{
+    width:60%;
+    height: 60%;
+    margin: 0 auto;
 }
 
 #logoutBtn:hover {
@@ -67,4 +84,9 @@
         padding: 8px 16px;
         /* Adjust padding for smaller screens */
     }
+    #calendar {
+        width: 200px;
+        height: 600px;
+    }
 }
+

@@ -24,13 +24,15 @@
       <label for="age">Input your age (years): <input id="age" type="number" name="age" min="13" max="120" /></label>
     </fieldset>
     <input type="submit" value="Submit" onclick="" />
-    <a href="C:\Users\KS\Documents\(0)SCHOOL\(0)CTU\SleepStats\index.html">I have an account</a>
+    <a href="../../index.html">I have an account</a>
   </form>
 
   <script type="module">
     // Import the functions you need from the SDKs you need
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+    import { getAuth, signOut, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+    import * as firestore from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
 
     // TODO: Add SDKs for Firebase products that you want to use
     // https://firebase.google.com/docs/web/setup#available-libraries
@@ -50,7 +52,11 @@
     // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    const db = firestore.getFirestore(app)
     window.auth = auth;
+    window.signOutAcc = signOut;
+    window.db = db;
+    window.firestore = firestore
     window.register = createUserWithEmailAndPassword;
 
   </script>
@@ -66,9 +72,22 @@
       var age = document.getElementById("age").value;
       window.register(window.auth, email, pass)
 
-        .then((userCredential) => {
+        .then(async (userCredential) => {
           // Signed up 
           const user = userCredential.user;
+          const { doc, setDoc, collection } = window.firestore;
+          const db = window.db
+
+          var userRef = doc(
+            collection(db, "users"),
+            user.uid);
+
+          await setDoc(userRef, {
+            name: firstName + " " + lastName,
+            email: email,
+            age: age,
+          })
+
           console.log(user);
           alert("Registered!");
           window.location.href = "../../";

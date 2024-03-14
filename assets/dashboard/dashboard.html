@@ -7,7 +7,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sleep Stats - Dahsboard</title>
   <link rel="stylesheet" href="styles.css" />
-  <script src="dashboard.js"></script>
+  <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'></script>
+  <script src="dashboard.js" defer></script>
+  <script>
+
+  </script>
 </head>
 
 <body>
@@ -18,18 +22,27 @@
   </div>
 
   <div id="Tab1" class="tabcontent">
-    <h3>Content for Tab 1</h3>
-    <p>This is the content for Tab 1.</p>
+    <h3>History / Analytics</h3>
+    <p>Calendar</p>
+    <div id='calendar'></div>
   </div>
 
   <div id="Tab2" class="tabcontent">
-    <h3>Content for Tab 2</h3>
-    <p>This is the content for Tab 2.</p>
+    <h3>Record Sleep</h3>
+    <p>Date: 
+      <span id="currentDate"></span>
+    </p>
+    <p>Sleep Time: <button id="recordSleep">RECORD</button> <span id="currentSleepTime"></span></p>
+    <p>Wake Time: <button id="recordWake">RECORD</button> <span id="currentWakeTime"></span></p>
   </div>
 
   <div id="Tab3" class="tabcontent">
-    <h3 id="profile">Profile</h3>
-    <button id="logoutBtn">Logout</button>
+    <h3>Profile</h3>
+    <div id="outBtn"><button id="logoutBtn">Logout</button></div>
+  </div>
+
+  <div id="welcomeTab">
+    <h3>Hello World</h3>
   </div>
 
 </body>
@@ -37,7 +50,9 @@
 <script type="module">
   // Import the functions you need from the SDKs you need
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-  import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+  import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+  import * as firestore from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
 
   // TODO: Add SDKs for Firebase products that you want to use
   // https://firebase.google.com/docs/web/setup#available-libraries
@@ -57,12 +72,43 @@
   // Initialize Firebase
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
+  const db = firestore.getFirestore(app)
+  onAuthStateChanged(auth, (user) => {
+  if (user) {
+    // User is signed in, see docs for a list of available properties
+    // https://firebase.google.com/docs/reference/js/auth.user
+    const uid = user.uid;
+    window.userid = uid
+    console.log(uid)
+    
+    // ...
+  } else {
+    // User is signed out
+    // ...
+    console.log("User signed out");
+    window.location.href = "../../index.html ";
+  }
+});
   window.auth = auth;
   window.signOutAcc = signOut;
+  window.db = db;
+  window.firestore = firestore
 
 </script>
-<script defer>
-  
+<script>
+  document.getElementById("logoutBtn").addEventListener("click", function () {
+    // Add your logout functionality here
+    // For example, if you're using Firebase, you can sign out the user:
+    window.signOutAcc(window.auth)
+      .then(function () {
+        // Sign-out successful.
+        console.log("User signed out");
+        window.location.href = "../../index.html ";
+      }).catch(function (error) {
+        // An error happened.
+        console.error("Error signing out: ", error);
+      });
+  });
 
 </script>
 
