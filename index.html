@@ -8,42 +8,139 @@
   <title>Sleep Stats - Login</title>
   <link rel="stylesheet" href="./assets/styles.css" />
   <script src="./assets/main.js"></script>
+  <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
+
 </head>
 
 <body>
-
-  <div class="row">
-
-    <div class="column" id="logo">
-      <img src=".\assets\img\SleepStats.png" alt="SleepStats logo">
-      <p>Find out yout sleeping habits</p>
-    </div>
-
-    <div class="column2">
-
-      <form action="" class="login_form" onsubmit="signIn(event)" id="signInForm">
-
-        <div class="login_content">
-
-          <div class="login_box">
-            <p>
-            <h1 class="login_title"><i>Login</i></h1>
-            </p>
-          </div>
-          <div class="login__box-input">
-            <input type="email" required class="login__input" id="email" placeholder=" ">
-            <label for="login-email" class="login__label">Email</label>
-          </div>
-          <div class="login__box-input">
-            <input type="password" required class="login__input" id="password" placeholder=" ">
-            <label for="login-pass" class="login__label">Password</label>
-          </div>
-          <input type="submit" value="Login" class="login__button" />
-          <p>Don't have an account? <a href="./assets/Register/register.html"><i>Register</i></a></p>
+  <!-- <div class="container">
+    <div class="signin-signup">
+      <form action="" class="sign-in-form" onsubmit="signIn(event)" id="signInForm">
+        <div class="logo">
+          <img src="./assets/img/S (1).png" alt="" srcset="">
+        </div>
+      </form>
+      <form action="" class="sign-up-form">
+        <h2 class="title">Sign in</h>
+          <div class="login_content">
+            <div class="input-field">
+              <i class="fas fa-user"></i>
+              <input type="email" required class="login__input" id="email" placeholder="Email">
+            </div>
+            <div class="input-field">
+              <i class="fas fa-lock"></i>
+              <input type="password" required class="login__input" id="password" placeholder="">
+            </div>
+            <input type="submit" value="Login" class="btn">
+            <h2 class="title">Sign up</h2>
+            <div class="input-field">
+              <i class="fas fa-user"></i>
+              <input type="text" placeholder="Username">
+            </div>
+            <div class="input-field">
+              <i class="fas fa-envelope"></i>
+              <input type="text" placeholder="Email">
+            </div>
+            <div class="input-field">
+              <i class="fas fa-lock"></i>
+              <input type="password" placeholder="Password">
+            </div>
+            <input type="submit" value="Sign up" class="btn">
+            <p>Don't have an account? <a href="./assets/Register/register.html"><i>Register</i></a></p>
       </form>
     </div>
+    <div class="panels-container">
+      <div class="panel left-panel">
+        <div class="content">
+          <h3>Member of Brand?</h3>
+          <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Neque accusantium dolor, eos incidunt minima iure?
+          </p>
+          <button class="btn" id="sign-in-btn">Sign in</button>
+        </div>
+      </div>
+      <div class="panel right-panel">
+        <div class="content">
+          <h3>New to Brand?</h3>
+          <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Neque accusantium dolor, eos incidunt minima iure?
+          </p>
+          <button class="btn" id="sign-up-btn">Sign up</button>
+        </div>
+      </div>
+    </div>
+  </div> -->
+  <div class="container">
+    <div class="signin-signup">
+      <form action="" class="sign-in-form">
+        <div class="logo">
+          <img src="./assets/img/S (1).png" alt="" srcset="">
+        </div>
+      </form>
+      <form action="" class="sign-up-form" onsubmit="signIn(event)">
+        <h2 class="title">Login</h2>
+        <!-- <div class="input-field">
+          <i class="fas fa-user"></i>
+          <input type="text" placeholder="Username">
+        </div>
+        <div class="input-field">
+          <i class="fas fa-envelope"></i>
+          <input type="text" placeholder="Email">
+        </div>
+        <div class="input-field">
+          <i class="fas fa-lock"></i>
+          <input type="password" placeholder="Password">
+        </div>
+        <input type="submit" value="Sign up" class="btn">
+        <p class="social-text">Or Sign in with social platform</p>
+        <div class="social-media">
+          <a href="#" class="social-icon">
+            <i class="fab fa-facebook"></i>
+          </a>
+          <a href="" class="social-icon">
+            <i class="fab fa-twitter"></i>
+          </a>
+          <a href="" class="social-icon">
+            <i class="fab fa-google"></i>
+          </a>
+          <a href="" class="social-icon">
+            <i class="fab fa-linkedin-in"></i>
+          </a>
+        </div>
+        <p class="account-text">Already have an account? <a href="#" id="sign-in-btn2">Sign in</a></p> -->
+        <div class="login__box-input input-field">
+          <i class="fas fa-envelope"></i>
+          <input type="email" required class="login__input" id="email" placeholder="Email">
+          <!-- <label for="login-email" class="login__label">Email</label> -->
+        </div>
+        <div class="login__box-input input-field">
+          <i class="fas fa-lock"></i>
+          <input type="password" required class="login__input" id="password" placeholder="Password">
+          <!-- <label for="login-pass" class="login__label">Password</label> -->
+        </div>
+        <input type="submit" value="Login" class="login__button btn" />
+        <p>Don't have an account? <a href="./assets/Register/register.html"><i>Register</i></a></p>
+      </form>
+    </div>
+    <div class="panels-container">
+      <div class="panel left-panel">
+        <div class="content">
+          <h3>Member of Brand?</h3>
+          <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Neque accusantium dolor, eos incidunt minima iure?
+          </p>
+          <button class="btn" id="sign-in-btn">Home</button>
+        </div>
+        <img src="signin.svg" alt="" class="image">
+      </div>
+      <div class="panel right-panel">
+        <div class="content">
+          <h3>New to Brand?</h3>
+          <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Neque accusantium dolor, eos incidunt minima iure?
+          </p>
+          <button class="btn" id="sign-up-btn">Sign in</button>
+        </div>
+        <img src="signup.svg" alt="" class="image">
+      </div>
+    </div>
   </div>
-
   <script type="module">
     // Import the functions you need from the SDKs you need
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
@@ -88,12 +185,13 @@
           alert("signed in!");
           window.location.href = "./assets/dashboard/dashboard.html";
           // ...
-    })
+        })
         .catch((error) => {
           const errorCode = error.code;
           const errorMessage = error.message;
           console.log(errorCode, errorMessage);
         });
-      }
+    }
   </script>
+  <script src="app.js"></script>
 </body>

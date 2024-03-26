@@ -29,6 +29,8 @@ function openTab(evt, tabName) {
 document.addEventListener('DOMContentLoaded', function () {
   var calendarEl = document.getElementById('calendar');
 
+
+
   var calendar = new FullCalendar.Calendar(calendarEl, {
     initialView: 'dayGridMonth',
     initialDate: '2024-02-07',
@@ -56,6 +58,52 @@ document.addEventListener('DOMContentLoaded', function () {
 
   calendar.render();
   window.calendar = calendar
+
+  setTimeout(async () => {
+    const { doc, setDoc, collection, addDoc, updateDoc, getDocs } = window.firestore;
+    var sleepCollection = collection(
+      doc(
+        collection(db, "users"),
+        window.userid
+      ),
+      "sleeps"
+    )
+    console.log(sleepCollection)
+    const querySnapshot = await getDocs(sleepCollection);
+    const sleeps = []
+    const events = []
+    querySnapshot.forEach((doc) => {
+      sleeps.push(doc.data())
+    });
+    console.log(sleeps)
+
+    for (let i = 0; i < sleeps.length; i++) {
+      const data = sleeps[i]
+      const title = "Sleep";
+      const startDate = new Date(data["sleep_timestamp"])
+      const endDate = new Date(data["wake_timestamp"])
+      const start = startDate.toISOString();
+      const end = endDate.toISOString();
+      const durationMs = endDate - startDate;
+      const hours = Math.floor(durationMs / (1000 * 60 * 60));
+      const minutes = Math.floor((durationMs % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((durationMs % (1000 * 60)) / 1000);
+      const durationString = `${hours} hours ${minutes} minutes ${seconds} seconds`;
+      const titleWithDuration = `${title} (${durationString})`;
+
+
+      events.push({
+        title: titleWithDuration,
+        start: start,
+        end: end
+
+
+      });
+    }
+    events.forEach(event => {
+      calendar.addEvent(event);
+    });
+  }, 1000)
 });
 
 const d = new Date();
@@ -72,26 +120,30 @@ document.getElementById("recordSleep").addEventListener("click", async function 
   let timeContainer = document.getElementById("currentSleepTime")
   timeContainer.innerHTML = sleepDate.getHours() + ":" + sleepDate.getMinutes()
 
-  const { doc, setDoc, collection } = window.firestore;
+  const { doc, setDoc, collection, addDoc, updateDoc } = window.firestore;
   const db = window.db
-  // const userColRef = collection(db, "users")
-  // const userDocRef = doc(userColRef, window.userid)
-  // const sleepColRef = collection(userDocRef, "sleeps")
-  // const sleepDocRef = doc(sleepColRef, )
-  // console.log(sleepDocRef)
-  await setDoc(
-    doc(
-      collection(
-        doc(
-          collection(db, "users"),
-          window.userid
-        ),
-        "sleeps"
+  console.log(addDoc)
+  const result = await addDoc(
+    collection(
+      doc(
+        collection(db, "users"),
+        window.userid
       ),
-      d.toDateString()
-    ), {
-    sleep: sleepDate.getHours() + ":" + sleepDate.getMinutes(),
-  });
+      "sleeps"
+    ),
+    {
+      sleep: sleepDate.getHours() + ":" + sleepDate.getMinutes(),
+      sleep_timestamp: sleepDate.getTime()
+    });
+  console.log(result)
+  await updateDoc(doc(
+    collection(db, "users"),
+    window.userid
+  ),
+    {
+      current_id: result.id
+    }
+  )
   document.getElementById("currentWakeTime").innerHTML = ""
   console.log("sleep")
 })
@@ -100,8 +152,16 @@ document.getElementById("recordWake").addEventListener("click", async function (
   const sleepDate = new Date();
   let timeContainer = document.getElementById("currentWakeTime")
   timeContainer.innerHTML = sleepDate.getHours() + ":" + sleepDate.getMinutes()
-  const { doc, setDoc, updateDoc, collection } = window.firestore
+  const { doc, setDoc, updateDoc, collection, getDoc } = window.firestore
 
+  const userDoc = doc(
+    collection(db, "users"),
+    window.userid
+  )
+
+  const userSnap = await getDoc(userDoc)
+  const userData = userSnap.data()
+  const id = userData.current_id
 
   await updateDoc(
     doc(
@@ -112,9 +172,10 @@ document.getElementById("recordWake").addEventListener("click", async function (
         ),
         "sleeps"
       ),
-      d.toDateString()
+      id
     ), {
-    wake: sleepDate.getHours() + ":" + sleepDate.getMinutes()
+    wake: sleepDate.getHours() + ":" + sleepDate.getMinutes(),
+    wake_timestamp: sleepDate.getTime()
   });
 
   console.log("wake")
@@ -124,6 +185,16 @@ document.getElementById("recordWake").addEventListener("click", async function (
 async function onRecordTab() {
   const { doc, getDoc, setDoc, updateDoc, collection } = window.firestore
   const db = window.db
+
+  const userDoc = doc(
+    collection(db, "users"),
+    window.userid
+  )
+
+  const userSnap = await getDoc(userDoc)
+  const userData = userSnap.data()
+  const id = userData.current_id
+
   const sleepDocRef = doc(
     collection(
       doc(
@@ -132,7 +203,7 @@ async function onRecordTab() {
       ),
       "sleeps"
     ),
-    d.toDateString()
+    id
   )
   const docSnap = await getDoc(sleepDocRef)
   let data = null
@@ -146,7 +217,7 @@ async function onRecordTab() {
   }
   let sleepContainer = document.getElementById("currentSleepTime")
   sleepContainer.innerHTML = data.sleep
-  if(data.wake == undefined){
+  if (data.wake == undefined) {
     return;
   }
   let wakeContainer = document.getElementById("currentWakeTime")
