@@ -15,7 +15,11 @@ function openTab(evt, tabName) {
   }
 
   // Show the specific tab content and mark the button as active
-  document.getElementById(tabName).style.display = "block";
+  document.getElementById(tabName).style.display = "inherit";
+  if (tabName == "Tab2") {
+    document.getElementById(tabName).style.display = "flex";
+
+  }
   evt.currentTarget.className += " active";
   window.calendar.render()
 

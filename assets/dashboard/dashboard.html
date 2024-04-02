@@ -29,11 +29,23 @@
 
   <div id="Tab2" class="tabcontent">
     <h3>Record Sleep</h3>
-    <p>Date: 
+    <p>Date:
       <span id="currentDate"></span>
     </p>
-    <p>Sleep Time: <button id="recordSleep">RECORD</button> <span id="currentSleepTime"></span></p>
-    <p>Wake Time: <button id="recordWake">RECORD</button> <span id="currentWakeTime"></span></p>
+    <div>
+      <span>
+        Sleep Time: 
+       <span id="currentSleepTime"></span>
+      </span>
+      <button id="recordSleep">RECORD</button>
+    </div>
+    <div>
+      <span>
+        Wake Time:
+       <span id="currentWakeTime"></span>
+      </span>
+      <button id="recordWake">RECORD</button>
+    </div>
   </div>
 
   <div id="Tab3" class="tabcontent">
@@ -74,21 +86,21 @@
   const auth = getAuth(app);
   const db = firestore.getFirestore(app)
   onAuthStateChanged(auth, (user) => {
-  if (user) {
-    // User is signed in, see docs for a list of available properties
-    // https://firebase.google.com/docs/reference/js/auth.user
-    const uid = user.uid;
-    window.userid = uid
-    console.log(uid)
-    
-    // ...
-  } else {
-    // User is signed out
-    // ...
-    console.log("User signed out");
-    window.location.href = "../../index.html ";
-  }
-});
+    if (user) {
+      // User is signed in, see docs for a list of available properties
+      // https://firebase.google.com/docs/reference/js/auth.user
+      const uid = user.uid;
+      window.userid = uid
+      console.log(uid)
+
+      // ...
+    } else {
+      // User is signed out
+      // ...
+      console.log("User signed out");
+      window.location.href = "../../index.html ";
+    }
+  });
   window.auth = auth;
   window.signOutAcc = signOut;
   window.db = db;
