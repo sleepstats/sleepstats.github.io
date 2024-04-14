@@ -5,27 +5,32 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sleep Stats - Login</title>
+  <title>Sleep Stats - Signup</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 
 <body>
+  <div class="container"> </div>
   <form action="" onsubmit="Register(event)">
     <fieldset>
-      <label for="first-name">Enter Your First Name: <input id="first-name" name="first-name" type="text"
-          required /></label>
-      <label for="last-name">Enter Your Last Name: <input id="last-name" name="last-name" type="text"
-          required /></label>
-      <label for="email">Enter Your Email: <input id="email" name="email" type="email" required /></label>
-      <label for="password">Create a New Password: <input id="password" name="password" type="password"
-          required /></label>
+      <label for="first-name">Enter Your First Name:
+        <input id="first-name" name="first-name" type="text" required class="input-field"/></label>
+      <label for="last-name">Enter Your Last Name:
+        <input id="last-name" name="last-name" type="text" required class="input-field"/></label>
+      <label for="email">Enter Your Email: 
+        <input id="email" name="email" type="email" required class="input-field"/></label>
+      <label for="password">Create a New Password: 
+        <input id="password" name="password" type="password" required class="input-field"/></label>
     </fieldset>
     <fieldset>
-      <label for="age">Input your age (years): <input id="age" type="number" name="age" min="13" max="120" /></label>
+      <label for="age">Input your age (years): 
+        <input id="age" type="number" name="age" min="13" max="120" class="input-field" /></label>
     </fieldset>
-    <input type="submit" value="Submit" onclick="" />
-    <a href="../../index.html">I have an account</a>
-  </form>
+    <input type="submit" value="Submit" onclick="" class="btn" />
+  </form>>
+  <div class="signin-div">Already have an account?
+    <a href="../../index.html"><button class="btn" id="sign-up-btn">Sign in</button></a>
+  </div>
 
   <script type="module">
     // Import the functions you need from the SDKs you need

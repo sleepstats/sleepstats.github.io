@@ -11,7 +11,7 @@ body {
 .tab {
     overflow: hidden;
     background-color: #f1f1f163;
-    text-align: center;
+    margin: 0 auto;
 }
 
 .tab button {
@@ -80,6 +80,7 @@ body {
     width:60%;
     height: 60%;
     margin: 0 auto;
+    color: #02071a;
 }
 
 #logoutBtn:hover {
@@ -133,4 +134,8 @@ body {
     background-color: #3b3c7c9c;
     color: #ddd;
     transition: 0.3s;
+}
+
+.history {
+    text-align: center;
 }
