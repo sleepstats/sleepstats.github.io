@@ -81,6 +81,24 @@ body {
     height: 60%;
     margin: 0 auto;
     color: #02071a;
+    /* border: 1px solid rebeccapurple; */
+    margin-top: 1em;
+    padding: 1em;
+    border-radius: 1em;
+    background-color: #8284f954;
+    box-shadow: 10px 10px 5px 0px rgba(0, 0, 0, 0.45);
+    -webkit-box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.45);
+    -moz-box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.45);
+}
+
+#calendar table{
+    overflow: hidden;
+}
+
+#calendar table, #calendar thead, #calendar td, #calendar th{
+    border: 1px solid black;
+    box-sizing: border-box;
+
 }
 
 #logoutBtn:hover {
@@ -109,6 +127,8 @@ body {
     justify-content: center;
     flex-direction: column;
     align-items: center;
+
+    
 }
 
 #Tab2 h3 {
@@ -120,7 +140,14 @@ body {
     flex-direction: column;
     margin: 1em;
     gap: 0.5em;
-
+    
+    margin-top: 1em;
+    padding: 1em;
+    border-radius: 1em;
+    background-color: #8284f954;
+    box-shadow: 10px 10px 5px 0px rgba(0, 0, 0, 0.45);
+    -webkit-box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.45);
+    -moz-box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.45);
 }
 
 #Tab2 button {
