@@ -29,40 +29,7 @@ function openTab(evt, tabName) {
   }
 }
 
-
-document.addEventListener('DOMContentLoaded', function () {
-  var calendarEl = document.getElementById('calendar');
-
-
-
-  var calendar = new FullCalendar.Calendar(calendarEl, {
-    initialView: 'dayGridMonth',
-    initialDate: '2024-02-07',
-    headerToolbar: {
-      left: 'prev,next today',
-      center: 'title',
-      right: 'dayGridMonth,timeGridWeek,timeGridDay'
-    },
-    selectable: true,
-    dateClick: function (info) {
-      console.log('clicked ' + info.dateStr);
-    },
-    events: [
-      {
-        title: 'All Day Event',
-        start: '2024-03-14'
-      },
-      {
-        title: 'Meeting',
-        start: '2024-03-14T10:30:00',
-        end: '2024-03-14T15:30:00'
-      },
-    ]
-  });
-
-  calendar.render();
-  window.calendar = calendar
-
+const reRender = () => {
   setTimeout(async () => {
     const { doc, setDoc, collection, addDoc, updateDoc, getDocs } = window.firestore;
     var sleepCollection = collection(
@@ -95,29 +62,152 @@ document.addEventListener('DOMContentLoaded', function () {
       const durationString = `${hours} hours ${minutes} minutes ${seconds} seconds`;
       const titleWithDuration = `${title} (${durationString})`;
 
+      const formattedDate = `${startDate.getHours()}:${startDate.getMinutes()} (${startDate.getMonth() + 1}/${startDate.getDate()})`;
+      const formattedDateEnd = `${endDate.getHours()}:${endDate.getMinutes()} (${endDate.getMonth() + 1}/${endDate.getDate()})`;
 
       events.push({
         title: titleWithDuration,
         start: start,
-        end: end
+        end: end,
+        startDate: formattedDate,
+        endDate: formattedDateEnd,
+        duration: durationString
+      });
+    }
+    window.calendar.removeAllEvents();
+    events.forEach(event => {
+      window.calendar.addEvent(event);
+    });
+    const recordContainer = document.getElementById("sleep-list");
+    console.log(recordContainer);
+    events.forEach(event => {
+      const evtContainer = document.createElement("div");
+      evtContainer.innerHTML = `
+      <div>
+        <span>Start: <span><span>${event.startDate}</span>
+        </div>
+        <div>
+        <span>End: <span><span>${event.endDate}</span>
+        </div>
+        <div>
+        <span>Duration: <span><span>${event.duration}</span>
+        </div>
+      `
+      evtContainer.classList.add("sleep_record");
+      recordContainer.appendChild(evtContainer);
+    });
+    window.calendar.render();
+  }, 1000)
+}
 
 
+document.addEventListener('DOMContentLoaded', function () {
+  var calendarEl = document.getElementById('calendar');
+
+
+
+  var calendar = new FullCalendar.Calendar(calendarEl, {
+    initialView: 'timeGridDay',
+    initialDate: Date.now(),
+    selectable: true,
+    headerToolbar: {
+      left: 'prev,next today',
+      center: 'title',
+      right: 'timeGridWeek,timeGridDay'
+    },
+    selectable: true,
+    dateClick: function (info) {
+      console.log('clicked ' + info.dateStr);
+      calendar.changeView('timeGridDay', info.dateStr);
+      console.log(calendar.changeView);
+      // console.log(this)
+    },
+    events: [
+    ]
+  });
+
+  calendar.render();
+  window.calendar = calendar
+
+  setTimeout(async () => {
+    const { doc, setDoc, collection, addDoc, updateDoc, getDocs } = window.firestore;
+    var sleepCollection = collection(
+      doc(
+        collection(db, "users"),
+        window.userid
+      ),
+      "sleeps"
+    )
+    console.log(sleepCollection)
+    const querySnapshot = await getDocs(sleepCollection);
+    const sleeps = []
+    const events = []
+    querySnapshot.forEach((doc) => {
+      sleeps.push(doc.data())
+      console.log(doc.data())
+    });
+    console.log(sleeps)
+    sleeps.sort((a, b) => b.wake_timestamp - a.wake_timestamp);
+
+    for (let i = 0; i < sleeps.length; i++) {
+      const data = sleeps[i]
+      const title = "Sleep";
+      const startDate = new Date(data["sleep_timestamp"])
+      const endDate = new Date(data["wake_timestamp"])
+      const start = startDate.toISOString();
+      const end = endDate.toISOString();
+      const durationMs = endDate - startDate;
+      const hours = Math.floor(durationMs / (1000 * 60 * 60));
+      const minutes = Math.floor((durationMs % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((durationMs % (1000 * 60)) / 1000);
+      const durationString = `${hours} hours ${minutes} minutes ${seconds} seconds`;
+      const titleWithDuration = `${title} (${durationString})`;
+
+      const formattedDate = `${startDate.getHours()}:${startDate.getMinutes()} (${startDate.getMonth() + 1}/${startDate.getDate()})`;
+      const formattedDateEnd = `${endDate.getHours()}:${endDate.getMinutes()} (${endDate.getMonth() + 1}/${endDate.getDate()})`;
+
+      events.push({
+        title: titleWithDuration,
+        start: start,
+        end: end,
+        startDate: formattedDate,
+        endDate: formattedDateEnd,
+        duration: durationString
       });
     }
     events.forEach(event => {
       calendar.addEvent(event);
     });
+    const recordContainer = document.getElementById("sleep-list");
+    console.log(recordContainer);
+    events.forEach(event => {
+      const evtContainer = document.createElement("div");
+      evtContainer.innerHTML = `
+      <div>
+        <span>Start: <span><span>${event.startDate}</span>
+        </div>
+        <div>
+        <span>End: <span><span>${event.endDate}</span>
+        </div>
+        <div>
+        <span>Duration: <span><span>${event.duration}</span>
+        </div>
+      `
+      evtContainer.classList.add("sleep_record");
+      recordContainer.appendChild(evtContainer);
+    });
+
   }, 1000)
 });
 
 const d = new Date();
 let time = d.getTime();
 
-document.getElementById('currentDate').innerHTML = d.toDateString();
+// document.getElementById('currentDate').innerHTML = d.toDateString();
 
 
 
-console.log("hi")
+// console.log("hi")
 
 document.getElementById("recordSleep").addEventListener("click", async function () {
   const sleepDate = new Date();
@@ -183,6 +273,7 @@ document.getElementById("recordWake").addEventListener("click", async function (
   });
 
   console.log("wake")
+  reRender()
 })
 
 
