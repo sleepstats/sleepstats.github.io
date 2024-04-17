@@ -8,6 +8,57 @@
   <title>Sleep Stats - Dashboard</title>
   <link rel="stylesheet" href="styles.css" />
   <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+    import * as firestore from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+  
+  
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
+  
+    // Your web app's Firebase configuration
+    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+    const firebaseConfig = {
+      apiKey: "AIzaSyD7g7c4PH_jNPzB7U60B4XsLPJp2wZugpY",
+      authDomain: "sleepstats-2cf66.firebaseapp.com",
+      projectId: "sleepstats-2cf66",
+      storageBucket: "sleepstats-2cf66.appspot.com",
+      messagingSenderId: "439404168878",
+      appId: "1:439404168878:web:ee4a9cec62ee7c8dd20f3f",
+      measurementId: "G-NL1JZWTM1B"
+    };
+  
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = firestore.getFirestore(app)
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // User is signed in, see docs for a list of available properties
+        // https://firebase.google.com/docs/reference/js/auth.user
+        const uid = user.uid;
+        window.userid = uid
+        console.log(uid)
+  
+        // ...
+      } else {
+        // User is signed out
+        // ...
+        console.log("User signed out");
+        window.location.href = "../../index.html ";
+      }
+    });
+    window.auth = auth;
+    window.signOutAcc = signOut;
+    window.db = db;
+    window.firestore = firestore
+  
+  </script>
+ 
+ <script src="analytics.js" defer></script>
   <script src="dashboard.js" defer></script>
   <script>
 
@@ -46,6 +97,10 @@
       </div>
     </div>
   </div>
+  <div class="analytics">
+    <h2>Analytics Here</h2>
+    <canvas id="myChart"></canvas>
+  </div>
 
   <div id="Tab2" class="tabcontent">
     <!-- <h3>Record Sleep</h3>
@@ -70,63 +125,14 @@
 
   <div id="Tab3" class="tabcontent">
     <h3>Profile</h3>
-    <div id="outBtn"><button id="logoutBtn">Logout</button></div>
   </div>
+  <div id="outBtn"><button id="logoutBtn">Logout</button></div>
 
-  <div id="welcomeTab">
-    <h3>Hello World</h3>
-  </div>
 
 </body>
 
-<script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-  import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-  import * as firestore from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
-
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-  const firebaseConfig = {
-    apiKey: "AIzaSyD7g7c4PH_jNPzB7U60B4XsLPJp2wZugpY",
-    authDomain: "sleepstats-2cf66.firebaseapp.com",
-    projectId: "sleepstats-2cf66",
-    storageBucket: "sleepstats-2cf66.appspot.com",
-    messagingSenderId: "439404168878",
-    appId: "1:439404168878:web:ee4a9cec62ee7c8dd20f3f",
-    measurementId: "G-NL1JZWTM1B"
-  };
-
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = firestore.getFirestore(app)
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      // User is signed in, see docs for a list of available properties
-      // https://firebase.google.com/docs/reference/js/auth.user
-      const uid = user.uid;
-      window.userid = uid
-      console.log(uid)
-
-      // ...
-    } else {
-      // User is signed out
-      // ...
-      console.log("User signed out");
-      window.location.href = "../../index.html ";
-    }
-  });
-  window.auth = auth;
-  window.signOutAcc = signOut;
-  window.db = db;
-  window.firestore = firestore
-
-</script>
+ 
 <script>
   document.getElementById("logoutBtn").addEventListener("click", function () {
     // Add your logout functionality here
@@ -143,5 +149,4 @@
   });
 
 </script>
-
 </html>

@@ -4,7 +4,6 @@ body {
     background: linear-gradient(-45deg, #cfcad1, #6768ab);
     background-repeat: no-repeat;
     background-size: cover;
-    height: 100vh;
     box-sizing: border-box;
 }
 
@@ -53,7 +52,9 @@ body {
 }
 
 #outBtn button {
-    margin: 0 auto;
+    position: absolute;
+    right: 10px;
+    top: 1px;
 }
 
 #Tab3 {
@@ -270,4 +271,16 @@ body {
     justify-content: center;
     gap: 10px;
     padding: 20px;
+}
+
+.analytics{
+    height: 100vh;
+    padding: 100px 200px;
+    box-sizing: border-box;
+}
+
+
+#myChart{
+    /* width: 500px !important; */
+    /* height: 250px !important; */
 }

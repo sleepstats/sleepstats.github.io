@@ -39,14 +39,12 @@ const reRender = () => {
       ),
       "sleeps"
     )
-    console.log(sleepCollection)
     const querySnapshot = await getDocs(sleepCollection);
     const sleeps = []
     const events = []
     querySnapshot.forEach((doc) => {
       sleeps.push(doc.data())
     });
-    console.log(sleeps)
 
     for (let i = 0; i < sleeps.length; i++) {
       const data = sleeps[i]
@@ -79,7 +77,6 @@ const reRender = () => {
       window.calendar.addEvent(event);
     });
     const recordContainer = document.getElementById("sleep-list");
-    console.log(recordContainer);
     events.forEach(event => {
       const evtContainer = document.createElement("div");
       evtContainer.innerHTML = `
@@ -117,10 +114,7 @@ document.addEventListener('DOMContentLoaded', function () {
     },
     selectable: true,
     dateClick: function (info) {
-      console.log('clicked ' + info.dateStr);
       calendar.changeView('timeGridDay', info.dateStr);
-      console.log(calendar.changeView);
-      // console.log(this)
     },
     events: [
     ]
@@ -138,15 +132,12 @@ document.addEventListener('DOMContentLoaded', function () {
       ),
       "sleeps"
     )
-    console.log(sleepCollection)
     const querySnapshot = await getDocs(sleepCollection);
     const sleeps = []
     const events = []
     querySnapshot.forEach((doc) => {
       sleeps.push(doc.data())
-      console.log(doc.data())
     });
-    console.log(sleeps)
     sleeps.sort((a, b) => b.wake_timestamp - a.wake_timestamp);
 
     for (let i = 0; i < sleeps.length; i++) {
@@ -154,8 +145,10 @@ document.addEventListener('DOMContentLoaded', function () {
       const title = "Sleep";
       const startDate = new Date(data["sleep_timestamp"])
       const endDate = new Date(data["wake_timestamp"])
+
       const start = startDate.toISOString();
       const end = endDate.toISOString();
+
       const durationMs = endDate - startDate;
       const hours = Math.floor(durationMs / (1000 * 60 * 60));
       const minutes = Math.floor((durationMs % (1000 * 60 * 60)) / (1000 * 60));
@@ -179,7 +172,6 @@ document.addEventListener('DOMContentLoaded', function () {
       calendar.addEvent(event);
     });
     const recordContainer = document.getElementById("sleep-list");
-    console.log(recordContainer);
     events.forEach(event => {
       const evtContainer = document.createElement("div");
       evtContainer.innerHTML = `
@@ -196,7 +188,7 @@ document.addEventListener('DOMContentLoaded', function () {
       evtContainer.classList.add("sleep_record");
       recordContainer.appendChild(evtContainer);
     });
-
+    getAnalyticsData(window.userid)
   }, 1000)
 });
 
@@ -207,7 +199,6 @@ let time = d.getTime();
 
 
 
-// console.log("hi")
 
 document.getElementById("recordSleep").addEventListener("click", async function () {
   const sleepDate = new Date();
@@ -216,7 +207,6 @@ document.getElementById("recordSleep").addEventListener("click", async function 
 
   const { doc, setDoc, collection, addDoc, updateDoc } = window.firestore;
   const db = window.db
-  console.log(addDoc)
   const result = await addDoc(
     collection(
       doc(
@@ -229,7 +219,6 @@ document.getElementById("recordSleep").addEventListener("click", async function 
       sleep: sleepDate.getHours() + ":" + sleepDate.getMinutes(),
       sleep_timestamp: sleepDate.getTime()
     });
-  console.log(result)
   await updateDoc(doc(
     collection(db, "users"),
     window.userid
@@ -239,7 +228,6 @@ document.getElementById("recordSleep").addEventListener("click", async function 
     }
   )
   document.getElementById("currentWakeTime").innerHTML = ""
-  console.log("sleep")
 })
 
 document.getElementById("recordWake").addEventListener("click", async function () {
@@ -272,7 +260,6 @@ document.getElementById("recordWake").addEventListener("click", async function (
     wake_timestamp: sleepDate.getTime()
   });
 
-  console.log("wake")
   reRender()
 })
 
@@ -303,11 +290,9 @@ async function onRecordTab() {
   const docSnap = await getDoc(sleepDocRef)
   let data = null
   if (docSnap.exists()) {
-    console.log("Document data:", docSnap.data());
     data = docSnap.data();
   } else {
     // docSnap.data() will be undefined in this case
-    console.log("No such document!");
     return
   }
   let sleepContainer = document.getElementById("currentSleepTime")
