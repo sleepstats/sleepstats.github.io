@@ -27,6 +27,9 @@ console.log("Hello world")
     for (let i = 0; i < sleeps.length; i++) {
         const data = sleeps[i]
         const title = "Sleep";
+        if(data["wake_timestamp"] == undefined){
+            continue;
+          }
         const startDate = new Date(data["sleep_timestamp"])
         const endDate = new Date(data["wake_timestamp"])
   

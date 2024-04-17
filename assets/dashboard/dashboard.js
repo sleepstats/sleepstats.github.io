@@ -49,6 +49,10 @@ const reRender = () => {
     for (let i = 0; i < sleeps.length; i++) {
       const data = sleeps[i]
       const title = "Sleep";
+      console.log("endDate: ", data["wake_timestamp"])
+      if(data["wake_timestamp"] == undefined){
+        continue;
+      }
       const startDate = new Date(data["sleep_timestamp"])
       const endDate = new Date(data["wake_timestamp"])
       const start = startDate.toISOString();
@@ -143,6 +147,11 @@ document.addEventListener('DOMContentLoaded', function () {
     for (let i = 0; i < sleeps.length; i++) {
       const data = sleeps[i]
       const title = "Sleep";
+      console.log("endDate: ", data["wake_timestamp"])
+      if(data["wake_timestamp"] == undefined){
+        continue;
+      }
+
       const startDate = new Date(data["sleep_timestamp"])
       const endDate = new Date(data["wake_timestamp"])
 
@@ -189,6 +198,7 @@ document.addEventListener('DOMContentLoaded', function () {
       recordContainer.appendChild(evtContainer);
     });
     getAnalyticsData(window.userid)
+    onRecordTab()
   }, 1000)
 });
 
