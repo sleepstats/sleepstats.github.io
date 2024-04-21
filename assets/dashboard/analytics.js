@@ -50,13 +50,15 @@ console.log("Hello world")
       console.log("Hello world")
 
       new Chart(ctx, {
-        type: 'bar',
+        type: 'line',
         data: {
           labels: labels,
           datasets: [{
             label: 'Sleep Hours',
             data: sleep_hours,
-            borderWidth: 1
+            borderWidth: 1,
+            borderColor: 'yellow',
+            pointBackgroundColor: 'yellow'
           }]
         },
         options: {

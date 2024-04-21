@@ -5,6 +5,7 @@ body {
     background-repeat: no-repeat;
     background-size: cover;
     box-sizing: border-box;
+    overflow: auto;
 }
 
 .tab {
@@ -111,6 +112,7 @@ body {
     /* border: 1px solid red; */
 }
 
+
 #calendar table{
     overflow: hidden;
 }
@@ -162,10 +164,10 @@ body {
     font-size: 15px;
 }
 
-#calendar .fc-scroller{
-    /* opacity: 0; */
-    /* overflow: hidden !important; */
-}
+/* #calendar .fc-scroller{
+    opacity: 0;
+    overflow: hidden !important;
+} */
 
 
 
@@ -250,8 +252,12 @@ body {
     margin-top: 3em;
     flex-wrap: wrap;
     max-height: 450px;
-    overflow-y: scroll;
+    overflow-y: hidden;
     padding: 1em;
+}
+
+#sleep-list:hover {
+    overflow-y: auto;
 }
 
 #sleeps h2{
@@ -280,7 +286,12 @@ body {
 }
 
 
-#myChart{
-    /* width: 500px !important; */
-    /* height: 250px !important; */
+/* #myChart{
+    width: 500px !important;
+    height: 250px !important;
+} */
+
+.clouds {
+    z-index: 20;
+    object-fit: contain;
 }
