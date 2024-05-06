@@ -29,8 +29,29 @@ function openTab(evt, tabName) {
   }
 }
 
+const resetList = () => {
+  const recordContainer = document.getElementById("sleep-list");
+    const loader = document.getElementsByClassName("loader")[0];
+    loader.style.display = "block";
+
+    while (recordContainer.firstChild) {
+      recordContainer.removeChild(recordContainer.firstChild);
+    }
+    while (recordContainer.firstChild) {
+      const child = recordContainer.firstChild;
+      if (child !== loader) {
+        recordContainer.removeChild(child);
+      } else {
+        break;
+      }
+    }
+
+    return {recordContainer, loader}
+}
+
 const reRender = () => {
   setTimeout(async () => {
+    const {recordContainer, loader} = resetList();
     const { doc, setDoc, collection, addDoc, updateDoc, getDocs } = window.firestore;
     var sleepCollection = collection(
       doc(
@@ -39,6 +60,7 @@ const reRender = () => {
       ),
       "sleeps"
     )
+
     const querySnapshot = await getDocs(sleepCollection);
     const sleeps = []
     const events = []
@@ -50,7 +72,7 @@ const reRender = () => {
       const data = sleeps[i]
       const title = "Sleep";
       console.log("endDate: ", data["wake_timestamp"])
-      if(data["wake_timestamp"] == undefined){
+      if (data["wake_timestamp"] == undefined) {
         continue;
       }
       const startDate = new Date(data["sleep_timestamp"])
@@ -80,22 +102,10 @@ const reRender = () => {
     events.forEach(event => {
       window.calendar.addEvent(event);
     });
-    const recordContainer = document.getElementById("sleep-list");
+    loader.style.display = "none";
+
     events.forEach(event => {
-      const evtContainer = document.createElement("div");
-      evtContainer.innerHTML = `
-      <div>
-        <span>Start: <span><span>${event.startDate}</span>
-        </div>
-        <div>
-        <span>End: <span><span>${event.endDate}</span>
-        </div>
-        <div>
-        <span>Duration: <span><span>${event.duration}</span>
-        </div>
-      `
-      evtContainer.classList.add("sleep_record");
-      recordContainer.appendChild(evtContainer);
+      renderRecordContainer(event, recordContainer)
     });
     window.calendar.render();
   }, 1000)
@@ -148,7 +158,7 @@ document.addEventListener('DOMContentLoaded', function () {
       const data = sleeps[i]
       const title = "Sleep";
       console.log("endDate: ", data["wake_timestamp"])
-      if(data["wake_timestamp"] == undefined){
+      if (data["wake_timestamp"] == undefined) {
         continue;
       }
 
@@ -181,26 +191,32 @@ document.addEventListener('DOMContentLoaded', function () {
       calendar.addEvent(event);
     });
     const recordContainer = document.getElementById("sleep-list");
+    const loader = document.getElementsByClassName("loader")[0];
+    loader.style.display = "none";
     events.forEach(event => {
-      const evtContainer = document.createElement("div");
-      evtContainer.innerHTML = `
-      <div>
-        <span>Start: <span><span>${event.startDate}</span>
-        </div>
-        <div>
-        <span>End: <span><span>${event.endDate}</span>
-        </div>
-        <div>
-        <span>Duration: <span><span>${event.duration}</span>
-        </div>
-      `
-      evtContainer.classList.add("sleep_record");
-      recordContainer.appendChild(evtContainer);
+      renderRecordContainer(event, recordContainer)
     });
     getAnalyticsData(window.userid)
     onRecordTab()
   }, 1000)
 });
+
+const renderRecordContainer = (evt, rcdContainer) => {
+  const evtContainer = document.createElement("div");
+  evtContainer.innerHTML = `
+  <div>
+    <span>Start: <span><span>${evt.startDate}</span>
+    </div>
+    <div>
+    <span>End: <span><span>${evt.endDate}</span>
+    </div>
+    <div>
+    <span>Duration: <span><span>${evt.duration}</span>
+    </div>
+  `
+  evtContainer.classList.add("sleep_record");
+  rcdContainer.appendChild(evtContainer);
+}
 
 const d = new Date();
 let time = d.getTime();

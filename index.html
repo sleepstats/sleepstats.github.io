@@ -117,8 +117,8 @@
           <input type="password" required class="login__input" id="password" placeholder="Password">
           <!-- <label for="login-pass" class="login__label">Password</label> -->
         </div>
-        <input type="submit" value="Login" class="login__button btn" />
-        <div class="loader"></div>
+        <input type="submit" value="Login" class="login__button btn" id="login_submit"/>
+        <div class="loader" style="display: none;"></div>
       </form>
     </div>
     <div class="panels-container">
@@ -175,6 +175,11 @@
 
       var email = document.getElementById("email").value;
       var password = document.getElementById("password").value;
+      const loader = document.getElementsByClassName("loader")[0];
+      const submit = document.getElementById("login_submit");
+      console.log(loader)
+      loader.style.display = "block";
+      submit.style.display = "none";
 
       window.SignIn(window.auth, email, password)
 
@@ -190,6 +195,8 @@
           const errorMessage = error.message;
           console.log(errorCode, errorMessage);
         });
+     
+
     }
   </script>
   <script src="app.js"></script>
