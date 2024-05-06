@@ -269,9 +269,9 @@ a {
 .loader {
   border: 16px solid #f3f3f3;
   border-top: 16px solid #000000;
-  border-radius: 30%;
-  width: 120px;
-  height: 120px;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
   animation: spin 2s linear infinite;
 }
 
