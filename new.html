@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sleep Stats - Login</title>
+  <link rel="stylesheet" href="new.css">
+  <script src="./assets/main.js"></script>
+  <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
+    integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
+</head>
+
+<body>
+
+  <div class="container">
+    <div class="logo">
+      <img src="./assets/img/logo.png" alt="" srcset="">
+      <a href="#form" id="continue">Continue</a>
+    </div>
+    <div class="form" id="form">
+      <form action="" class="sign-up-form" onsubmit="signIn(event)">
+        <h2 class="title">Login</h2>
+        <div class="login__box-input input-field">
+          <i class="fas fa-envelope"></i>
+          <input type="email" required class="login__input" id="email" placeholder="Email">
+        </div>
+        <div class="login__box-input input-field">
+          <i class="fas fa-lock"></i>
+          <input type="password" required class="login__input" id="password" placeholder="Password">
+        </div>
+        <input type="submit" value="Login" class="login__button btn" id="login_submit"/>
+        <div class="loader" style="display: none;"></div>
+      </form>
+    </div>
+  </div>
+
+
+
+
+
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+    const firebaseConfig = {
+      apiKey: "AIzaSyD7g7c4PH_jNPzB7U60B4XsLPJp2wZugpY",
+      authDomain: "sleepstats-2cf66.firebaseapp.com",
+      projectId: "sleepstats-2cf66",
+      storageBucket: "sleepstats-2cf66.appspot.com",
+      messagingSenderId: "439404168878",
+      appId: "1:439404168878:web:ee4a9cec62ee7c8dd20f3f",
+      measurementId: "G-NL1JZWTM1B"
+    };
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    window.auth = auth;
+    window.SignIn = signInWithEmailAndPassword;
+  </script>
+  <script>
+    function signIn(event) {
+      event.preventDefault(); // Prevent form submission
+
+      var email = document.getElementById("email").value;
+      var password = document.getElementById("password").value;
+      const loader = document.getElementsByClassName("loader")[0];
+      const submit = document.getElementById("login_submit");
+      console.log(loader)
+      loader.style.display = "block";
+      submit.style.display = "none";
+
+      window.SignIn(window.auth, email, password)
+
+        .then((userCredential) => {
+          const user = userCredential.user;
+          console.log(user);
+          window.location.href = "./assets/dashboard/dashboard.html";
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          console.log(errorCode, errorMessage);
+        });
+    }
+  </script>
+  <script src="app.js"></script>
+</body>

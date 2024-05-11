@@ -1,57 +1,28 @@
 
-function openTab(evt, tabName) {
-  var i, tabcontent, tablinks;
-
-  // Hide all tab content
-  tabcontent = document.getElementsByClassName("tabcontent");
-  for (i = 0; i < tabcontent.length; i++) {
-    tabcontent[i].style.display = "none";
-  }
-
-  // Deactivate all tab links
-  tablinks = document.getElementsByClassName("tablinks");
-  for (i = 0; i < tablinks.length; i++) {
-    tablinks[i].className = tablinks[i].className.replace(" active", "");
-  }
-
-  // Show the specific tab content and mark the button as active
-  document.getElementById(tabName).style.display = "inherit";
-  if (tabName == "Tab2") {
-    document.getElementById(tabName).style.display = "flex";
-
-  }
-  evt.currentTarget.className += " active";
-  window.calendar.render()
-
-  document.getElementById("welcomeTab").style.display = "none";
-  if (tabName == "Tab2") {
-    onRecordTab()
-  }
-}
 
 const resetList = () => {
   const recordContainer = document.getElementById("sleep-list");
-    const loader = document.getElementsByClassName("loader")[0];
-    loader.style.display = "block";
+  const loader = document.getElementsByClassName("loader")[0];
+  loader.style.display = "block";
 
-    while (recordContainer.firstChild) {
-      recordContainer.removeChild(recordContainer.firstChild);
+  while (recordContainer.firstChild) {
+    recordContainer.removeChild(recordContainer.firstChild);
+  }
+  while (recordContainer.firstChild) {
+    const child = recordContainer.firstChild;
+    if (child !== loader) {
+      recordContainer.removeChild(child);
+    } else {
+      break;
     }
-    while (recordContainer.firstChild) {
-      const child = recordContainer.firstChild;
-      if (child !== loader) {
-        recordContainer.removeChild(child);
-      } else {
-        break;
-      }
-    }
+  }
 
-    return {recordContainer, loader}
+  return { recordContainer, loader }
 }
 
 const reRender = () => {
   setTimeout(async () => {
-    const {recordContainer, loader} = resetList();
+    const { recordContainer, loader } = resetList();
     const { doc, setDoc, collection, addDoc, updateDoc, getDocs } = window.firestore;
     var sleepCollection = collection(
       doc(
@@ -66,6 +37,9 @@ const reRender = () => {
     const events = []
     querySnapshot.forEach((doc) => {
       sleeps.push(doc.data())
+      const data = doc.data();
+      data.id = doc.id;
+      sleeps.push(data)
     });
 
     for (let i = 0; i < sleeps.length; i++) {
@@ -95,7 +69,8 @@ const reRender = () => {
         end: end,
         startDate: formattedDate,
         endDate: formattedDateEnd,
-        duration: durationString
+        duration: durationString,
+        id: data["id"]
       });
     }
     window.calendar.removeAllEvents();
@@ -114,8 +89,6 @@ const reRender = () => {
 
 document.addEventListener('DOMContentLoaded', function () {
   var calendarEl = document.getElementById('calendar');
-
-
 
   var calendar = new FullCalendar.Calendar(calendarEl, {
     initialView: 'timeGridDay',
@@ -150,7 +123,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const sleeps = []
     const events = []
     querySnapshot.forEach((doc) => {
-      sleeps.push(doc.data())
+      const data = doc.data();
+      data.id = doc.id;
+      sleeps.push(data)
     });
     sleeps.sort((a, b) => b.wake_timestamp - a.wake_timestamp);
 
@@ -184,7 +159,8 @@ document.addEventListener('DOMContentLoaded', function () {
         end: end,
         startDate: formattedDate,
         endDate: formattedDateEnd,
-        duration: durationString
+        duration: durationString,
+        id: data["id"],
       });
     }
     events.forEach(event => {
@@ -203,6 +179,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
 const renderRecordContainer = (evt, rcdContainer) => {
   const evtContainer = document.createElement("div");
+  evtContainer.addEventListener("click", () => {
+    window.selectedRecord = evt;
+    console.log(window.selectedRecord);
+  });
   evtContainer.innerHTML = `
   <div>
     <span>Start: <span><span>${evt.startDate}</span>
@@ -213,9 +193,53 @@ const renderRecordContainer = (evt, rcdContainer) => {
     <div>
     <span>Duration: <span><span>${evt.duration}</span>
     </div>
+    <div style="position: absolute; top: 0; right: 0; height: 20px; width: 50%; display:flex; justify-content: space-evenly">
+      <button onclick="showEditModal()">Edit</button>
+      <button>Delete</button>
+    </div>
   `
+
+  evtContainer.style.position = "relative"
   evtContainer.classList.add("sleep_record");
   rcdContainer.appendChild(evtContainer);
+
+}
+
+const showEditModal = () => {
+  const modal = document.getElementById("edit-modal")
+  modal.style.display = "flex";
+  const sleepInput = document.getElementById("sleep_time_input")
+  const wakeInput = document.getElementById("wake_time_input")
+  const sleepDateInput = document.getElementById("sleep_date_input")
+  const wakeDateInput = document.getElementById("wake_date_input")
+  setTimeout(() => {
+    const record = window.selectedRecord;
+    console.log(record);
+    sleepInput.value = record.startDate.split(" ")[0];
+    wakeInput.value = record.endDate.split(" ")[0];
+
+    // Convert start and end dates to Date objects
+    const startDate = new Date(record.start);
+    const endDate = new Date(record.end);
+
+    // Format dates as YYYY-MM-DD for input values
+    const startDateFormat = startDate.toISOString().split("T")[0];
+    const endDateFormat = endDate.toISOString().split("T")[0];
+    sleepDateInput.value = startDateFormat;
+    wakeDateInput.value = endDateFormat;
+
+    // Parse hours and minutes from input values
+    const sleepTime = sleepInput.value.split(":");
+    const wakeTime = wakeInput.value.split(":");
+
+    // Set hours and minutes to date objects
+    startDate.setHours(parseInt(sleepTime[0], 10), parseInt(sleepTime[1], 10), 0, 0);
+    endDate.setHours(parseInt(wakeTime[0], 10), parseInt(wakeTime[1], 10), 0, 0);
+  }, 1000);
+}
+const closeEditModal = () => {
+  const modal = document.getElementById("edit-modal")
+  modal.style.display = "none";
 }
 
 const d = new Date();

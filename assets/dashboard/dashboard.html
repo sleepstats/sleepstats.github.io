@@ -110,9 +110,17 @@
   </div>
   <div id="outBtn"><button id="logoutBtn">Logout</button></div>
 
-  <!-- <div class="clouds"><img src="../img/cloud.svg" alt=""></div> -->
-
-
+  <div id="edit-modal">
+    <div class="form">
+      <h2>Edit Sleep Record</h2>
+      <input id="sleep_time_input" type="text" placeholder="Sleep Time">
+      <input id="sleep_date_input" type="date" placeholder="Sleep Date">
+      <input id="wake_time_input" type="text" placeholder="Wake Time">
+      <input id="wake_date_input" type="date" placeholder="Wake Date">
+      <button>Save</button>
+      <button onclick="closeEditModal()">Cancel</button>
+    </div>
+  </div>
 </body>
 
 

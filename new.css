@@ -1,0 +1,95 @@
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
+
+.container {
+    width: 80%;
+    height: 90%;
+    box-sizing: border-box;
+    display: flex;
+    scroll-behavior: smooth;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 5px 5px 5px 0px rgba(0, 0, 0, 0.37);
+    -webkit-box-shadow: 5px 5px 5px 0px rgba(0, 0, 0, 0.37);
+    -moz-box-shadow: 5px 5px 5px 0px rgba(0, 0, 0, 0.37);
+}
+
+.logo {
+    /* background-color: aqua; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50%;
+    flex-direction: column;
+    gap: 3em;
+}
+
+.logo>#continue {
+    letter-spacing: 5px;
+    padding: 30px 60px;
+    border-radius: 20px;
+    background-color: bisque;
+    border: none;
+    font-weight: 600;
+    font-size: 25px;
+    color: rgb(64, 64, 64);
+}
+
+.logo>img {
+    width: 80%;
+}
+
+.form {
+    width: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: bisque;
+
+}
+
+.form>form {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.form>form>h2 {
+    font-size: 4em;
+}
+
+.input-field {}
+
+
+@media (max-width: 750px) {
+    .container {
+        display: block;
+        overflow-y: scroll;
+        width: 100%;
+        height: 100%;
+    }
+
+    .logo {
+        width: 100%;
+        height: 100vh;
+    }
+
+    .form {
+        height: 100vh;
+        width: 100%;
+    }
+
+}
