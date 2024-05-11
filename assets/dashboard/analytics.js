@@ -3,7 +3,6 @@ const ctx = document.getElementById('myChart');
   
 
 async function getAnalyticsData(userid) {
-console.log("Hello world")
     const db = window.db
     const { doc, setDoc, collection, addDoc, updateDoc, getDocs } = window.firestore;
     var sleepCollection = collection(
@@ -18,7 +17,6 @@ console.log("Hello world")
     querySnapshot.forEach((doc) => {
       sleeps.push(doc.data())
     });
-    console.log(sleeps)
     sleeps.sort((a, b) => a.wake_timestamp - b.wake_timestamp);
 
     const events = []
@@ -46,8 +44,6 @@ console.log("Hello world")
         sleep_hours.push(total_hours)
         labels.push(i+1);
       }
-      console.log(sleep_hours)
-      console.log("Hello world")
 
       new Chart(ctx, {
         type: 'line',

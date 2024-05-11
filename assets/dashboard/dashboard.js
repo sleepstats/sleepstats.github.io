@@ -19,7 +19,7 @@ const resetList = () => {
 const reRender = () => {
   setTimeout(async () => {
     const { recordContainer, loader } = resetList();
-    
+
     const { doc, collection, getDocs,query, orderBy } = window.firestore;
     var sleepCollection = collection(
       doc(
@@ -43,11 +43,31 @@ const reRender = () => {
 
     for (let i = 0; i < sleeps.length; i++) {
       const data = sleeps[i]
-      console.log("endDate: ", data["wake_timestamp"])
       if (data["wake_timestamp"] == undefined) {
         continue;
       }
-      const startDate = new Date(data["sleep_timestamp"])
+      const event = getEventFormat(data);
+      events.push(event);
+    }
+
+    window.calendar.removeAllEvents();
+
+    events.forEach(event => {
+      window.calendar.addEvent(event);
+    });
+
+    loader.style.display = "none";
+
+    events.forEach(event => {
+      renderRecordContainer(event, recordContainer)
+    });
+
+    window.calendar.render();
+  }, 1000)
+}
+
+const getEventFormat = (data) => {
+  const startDate = new Date(data["sleep_timestamp"])
       const endDate = new Date(data["wake_timestamp"])
 
       const start = startDate.toISOString();
@@ -57,8 +77,7 @@ const reRender = () => {
 
       const formattedDate = `${startDate.getHours()}:${startDate.getMinutes()} (${startDate.getMonth() + 1}/${startDate.getDate()})`;
       const formattedDateEnd = `${endDate.getHours()}:${endDate.getMinutes()} (${endDate.getMonth() + 1}/${endDate.getDate()})`;
-
-      events.push({
+      const result = {
         title: titleWithDuration,
         start: start,
         end: end,
@@ -66,23 +85,11 @@ const reRender = () => {
         endDate: formattedDateEnd,
         duration: durationString,
         id: data["id"]
-      });
-    }
-    window.calendar.removeAllEvents();
-    events.forEach(event => {
-      window.calendar.addEvent(event);
-    });
-    loader.style.display = "none";
-
-    events.forEach(event => {
-      renderRecordContainer(event, recordContainer)
-    });
-    window.calendar.render();
-  }, 1000)
+      }
+      return result;
 }
 
 const getDurationInfo = (startDate, endDate) => {
-
   const title = "Sleep";
   const durationMs = endDate - startDate;
   const hours = Math.floor(durationMs / (1000 * 60 * 60));
@@ -141,38 +148,21 @@ document.addEventListener('DOMContentLoaded', function () {
 
     for (let i = 0; i < sleeps.length; i++) {
       const data = sleeps[i]
-      const title = "Sleep";
-      console.log("endDate: ", data["wake_timestamp"])
       if (data["wake_timestamp"] == undefined) {
         continue;
       }
-      const startDate = new Date(data["sleep_timestamp"])
-      const endDate = new Date(data["wake_timestamp"])
-
-      const start = startDate.toISOString();
-      const end = endDate.toISOString();
-
-      const { durationString, titleWithDuration } = getDurationInfo(startDate, endDate);
-
-      const formattedDate = `${startDate.getHours()}:${startDate.getMinutes()} (${startDate.getMonth() + 1}/${startDate.getDate()})`;
-      const formattedDateEnd = `${endDate.getHours()}:${endDate.getMinutes()} (${endDate.getMonth() + 1}/${endDate.getDate()})`;
-
-      events.push({
-        title: titleWithDuration,
-        start: start,
-        end: end,
-        startDate: formattedDate,
-        endDate: formattedDateEnd,
-        duration: durationString,
-        id: data["id"],
-      });
+      const event = getEventFormat(data);
+      events.push(event);
     }
+
     events.forEach(event => {
       calendar.addEvent(event);
     });
+
     const recordContainer = document.getElementById("sleep-list");
     const loader = document.getElementsByClassName("loader")[0];
     loader.style.display = "none";
+
     events.forEach(event => {
       renderRecordContainer(event, recordContainer)
     });
@@ -185,7 +175,6 @@ const renderRecordContainer = (evt, rcdContainer) => {
   const evtContainer = document.createElement("div");
   evtContainer.addEventListener("click", () => {
     window.selectedRecord = evt;
-    console.log(window.selectedRecord);
   });
   evtContainer.innerHTML = `
   <div>
@@ -218,7 +207,6 @@ const showEditModal = () => {
   const wakeDateInput = document.getElementById("wake_date_input")
   setTimeout(() => {
     const record = window.selectedRecord;
-    console.log(record);
     sleepInput.value = record.startDate.split(" ")[0];
     wakeInput.value = record.endDate.split(" ")[0];
 

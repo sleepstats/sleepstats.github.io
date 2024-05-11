@@ -31,23 +31,14 @@
       measurementId: "G-NL1JZWTM1B"
     };
   
-    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = firestore.getFirestore(app)
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        // User is signed in, see docs for a list of available properties
-        // https://firebase.google.com/docs/reference/js/auth.user
         const uid = user.uid;
         window.userid = uid
-        console.log(uid)
-  
-        // ...
       } else {
-        // User is signed out
-        // ...
-        console.log("User signed out");
         window.location.href = "../../index.html ";
       }
     });
