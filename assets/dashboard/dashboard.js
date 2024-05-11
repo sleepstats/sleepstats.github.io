@@ -1,10 +1,7 @@
-
-
 const resetList = () => {
   const recordContainer = document.getElementById("sleep-list");
   const loader = document.getElementsByClassName("loader")[0];
   loader.style.display = "block";
-
   while (recordContainer.firstChild) {
     recordContainer.removeChild(recordContainer.firstChild);
   }
@@ -16,14 +13,14 @@ const resetList = () => {
       break;
     }
   }
-
   return { recordContainer, loader }
 }
 
 const reRender = () => {
   setTimeout(async () => {
     const { recordContainer, loader } = resetList();
-    const { doc, setDoc, collection, addDoc, updateDoc, getDocs } = window.firestore;
+    
+    const { doc, collection, getDocs,query, orderBy } = window.firestore;
     var sleepCollection = collection(
       doc(
         collection(db, "users"),
@@ -31,10 +28,12 @@ const reRender = () => {
       ),
       "sleeps"
     )
+    const sortedQuery = query(sleepCollection, orderBy("sleep_timestamp"));
+    const querySnapshot = await getDocs(sortedQuery);
 
-    const querySnapshot = await getDocs(sleepCollection);
     const sleeps = []
     const events = []
+
     querySnapshot.forEach((doc) => {
       sleeps.push(doc.data())
       const data = doc.data();
@@ -44,21 +43,17 @@ const reRender = () => {
 
     for (let i = 0; i < sleeps.length; i++) {
       const data = sleeps[i]
-      const title = "Sleep";
       console.log("endDate: ", data["wake_timestamp"])
       if (data["wake_timestamp"] == undefined) {
         continue;
       }
       const startDate = new Date(data["sleep_timestamp"])
       const endDate = new Date(data["wake_timestamp"])
+
       const start = startDate.toISOString();
       const end = endDate.toISOString();
-      const durationMs = endDate - startDate;
-      const hours = Math.floor(durationMs / (1000 * 60 * 60));
-      const minutes = Math.floor((durationMs % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((durationMs % (1000 * 60)) / 1000);
-      const durationString = `${hours} hours ${minutes} minutes ${seconds} seconds`;
-      const titleWithDuration = `${title} (${durationString})`;
+
+      const { durationString, titleWithDuration } = getDurationInfo(startDate, endDate);
 
       const formattedDate = `${startDate.getHours()}:${startDate.getMinutes()} (${startDate.getMonth() + 1}/${startDate.getDate()})`;
       const formattedDateEnd = `${endDate.getHours()}:${endDate.getMinutes()} (${endDate.getMonth() + 1}/${endDate.getDate()})`;
@@ -86,6 +81,18 @@ const reRender = () => {
   }, 1000)
 }
 
+const getDurationInfo = (startDate, endDate) => {
+
+  const title = "Sleep";
+  const durationMs = endDate - startDate;
+  const hours = Math.floor(durationMs / (1000 * 60 * 60));
+  const minutes = Math.floor((durationMs % (1000 * 60 * 60)) / (1000 * 60));
+  const seconds = Math.floor((durationMs % (1000 * 60)) / 1000);
+  const durationString = `${hours} hours ${minutes} minutes ${seconds} seconds`;
+  const titleWithDuration = `${title} (${durationString})`;
+  return { durationString, titleWithDuration }
+}
+
 
 document.addEventListener('DOMContentLoaded', function () {
   var calendarEl = document.getElementById('calendar');
@@ -111,7 +118,7 @@ document.addEventListener('DOMContentLoaded', function () {
   window.calendar = calendar
 
   setTimeout(async () => {
-    const { doc, setDoc, collection, addDoc, updateDoc, getDocs } = window.firestore;
+    const { doc, collection, getDocs,query, orderBy } = window.firestore;
     var sleepCollection = collection(
       doc(
         collection(db, "users"),
@@ -119,9 +126,12 @@ document.addEventListener('DOMContentLoaded', function () {
       ),
       "sleeps"
     )
-    const querySnapshot = await getDocs(sleepCollection);
+    const sortedQuery = query(sleepCollection, orderBy("sleep_timestamp"));
+    const querySnapshot = await getDocs(sortedQuery);
+
     const sleeps = []
     const events = []
+
     querySnapshot.forEach((doc) => {
       const data = doc.data();
       data.id = doc.id;
@@ -136,19 +146,13 @@ document.addEventListener('DOMContentLoaded', function () {
       if (data["wake_timestamp"] == undefined) {
         continue;
       }
-
       const startDate = new Date(data["sleep_timestamp"])
       const endDate = new Date(data["wake_timestamp"])
 
       const start = startDate.toISOString();
       const end = endDate.toISOString();
 
-      const durationMs = endDate - startDate;
-      const hours = Math.floor(durationMs / (1000 * 60 * 60));
-      const minutes = Math.floor((durationMs % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((durationMs % (1000 * 60)) / 1000);
-      const durationString = `${hours} hours ${minutes} minutes ${seconds} seconds`;
-      const titleWithDuration = `${title} (${durationString})`;
+      const { durationString, titleWithDuration } = getDurationInfo(startDate, endDate);
 
       const formattedDate = `${startDate.getHours()}:${startDate.getMinutes()} (${startDate.getMonth() + 1}/${startDate.getDate()})`;
       const formattedDateEnd = `${endDate.getHours()}:${endDate.getMinutes()} (${endDate.getMonth() + 1}/${endDate.getDate()})`;
