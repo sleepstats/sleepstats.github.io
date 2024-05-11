@@ -3,9 +3,6 @@ const resetList = () => {
   const loader = document.getElementsByClassName("loader")[0];
   loader.style.display = "block";
   while (recordContainer.firstChild) {
-    recordContainer.removeChild(recordContainer.firstChild);
-  }
-  while (recordContainer.firstChild) {
     const child = recordContainer.firstChild;
     if (child !== loader) {
       recordContainer.removeChild(child);
@@ -18,50 +15,8 @@ const resetList = () => {
 
 const reRender = () => {
   setTimeout(async () => {
-    const { recordContainer, loader } = resetList();
-
-    const { doc, collection, getDocs,query, orderBy } = window.firestore;
-    var sleepCollection = collection(
-      doc(
-        collection(db, "users"),
-        window.userid
-      ),
-      "sleeps"
-    )
-    const sortedQuery = query(sleepCollection, orderBy("sleep_timestamp"));
-    const querySnapshot = await getDocs(sortedQuery);
-
-    const sleeps = []
-    const events = []
-
-    querySnapshot.forEach((doc) => {
-      sleeps.push(doc.data())
-      const data = doc.data();
-      data.id = doc.id;
-      sleeps.push(data)
-    });
-
-    for (let i = 0; i < sleeps.length; i++) {
-      const data = sleeps[i]
-      if (data["wake_timestamp"] == undefined) {
-        continue;
-      }
-      const event = getEventFormat(data);
-      events.push(event);
-    }
-
+    await loadAndDisplayRecords();
     window.calendar.removeAllEvents();
-
-    events.forEach(event => {
-      window.calendar.addEvent(event);
-    });
-
-    loader.style.display = "none";
-
-    events.forEach(event => {
-      renderRecordContainer(event, recordContainer)
-    });
-
     window.calendar.render();
   }, 1000)
 }
@@ -125,51 +80,53 @@ document.addEventListener('DOMContentLoaded', function () {
   window.calendar = calendar
 
   setTimeout(async () => {
-    const { doc, collection, getDocs,query, orderBy } = window.firestore;
-    var sleepCollection = collection(
-      doc(
-        collection(db, "users"),
-        window.userid
-      ),
-      "sleeps"
-    )
-    const sortedQuery = query(sleepCollection, orderBy("sleep_timestamp"));
-    const querySnapshot = await getDocs(sortedQuery);
-
-    const sleeps = []
-    const events = []
-
-    querySnapshot.forEach((doc) => {
-      const data = doc.data();
-      data.id = doc.id;
-      sleeps.push(data)
-    });
-    sleeps.sort((a, b) => b.wake_timestamp - a.wake_timestamp);
-
-    for (let i = 0; i < sleeps.length; i++) {
-      const data = sleeps[i]
-      if (data["wake_timestamp"] == undefined) {
-        continue;
-      }
-      const event = getEventFormat(data);
-      events.push(event);
-    }
-
-    events.forEach(event => {
-      calendar.addEvent(event);
-    });
-
-    const recordContainer = document.getElementById("sleep-list");
-    const loader = document.getElementsByClassName("loader")[0];
-    loader.style.display = "none";
-
-    events.forEach(event => {
-      renderRecordContainer(event, recordContainer)
-    });
+    await loadAndDisplayRecords();
     getAnalyticsData(window.userid)
-    onRecordTab()
   }, 1000)
 });
+
+const loadAndDisplayRecords = async () => {
+  const { recordContainer, loader } = resetList();
+  const { doc, collection, getDocs,query, orderBy } = window.firestore;
+  var sleepCollection = collection(
+    doc(
+      collection(db, "users"),
+      window.userid
+    ),
+    "sleeps"
+  )
+  const sortedQuery = query(sleepCollection, orderBy("sleep_timestamp"));
+  const querySnapshot = await getDocs(sortedQuery);
+
+  const sleeps = []
+  const events = []
+
+  querySnapshot.forEach((doc) => {
+    const data = doc.data();
+    data.id = doc.id;
+    sleeps.push(data)
+  });
+  sleeps.sort((a, b) => b.wake_timestamp - a.wake_timestamp);
+
+  for (let i = 0; i < sleeps.length; i++) {
+    const data = sleeps[i]
+    if (data["wake_timestamp"] == undefined) {
+      continue;
+    }
+    const event = getEventFormat(data);
+    events.push(event);
+  }
+
+  events.forEach(event => {
+    calendar.addEvent(event);
+  });
+
+  events.forEach(event => {
+    renderRecordContainer(event, recordContainer)
+  });
+
+  loader.style.display = "none";
+}
 
 const renderRecordContainer = (evt, rcdContainer) => {
   const evtContainer = document.createElement("div");
