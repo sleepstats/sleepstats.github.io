@@ -85,7 +85,9 @@
   </div>
   <div class="analytics">
     <h2>Analytics Here</h2>
+    <input type="month" id="selectedMonth">
     <canvas id="myChart"></canvas>
+    <canvas id="health"></canvas>
   </div>
 
   <div id="Tab2" class="tabcontent">
@@ -99,11 +101,11 @@
   <div id="edit-modal">
     <div class="form">
       <h2>Edit Sleep Record</h2>
-      <input id="sleep_time_input" type="text" placeholder="Sleep Time">
+      <input id="sleep_time_input" type="time" placeholder="Sleep Time">
       <input id="sleep_date_input" type="date" placeholder="Sleep Date">
-      <input id="wake_time_input" type="text" placeholder="Wake Time">
+      <input id="wake_time_input" type="time" placeholder="Wake Time">
       <input id="wake_date_input" type="date" placeholder="Wake Date">
-      <button>Save</button>
+      <button onclick="saveEdit()">Save</button>
       <button onclick="closeEditModal()">Cancel</button>
     </div>
   </div>

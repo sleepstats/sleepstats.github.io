@@ -2,58 +2,53 @@ const resetList = () => {
   const recordContainer = document.getElementById("sleep-list");
   const loader = document.getElementsByClassName("loader")[0];
   loader.style.display = "block";
-  while (recordContainer.firstChild) {
-    const child = recordContainer.firstChild;
+
+  // Clear all child elements except the loader
+  Array.from(recordContainer.children).forEach(child => {
     if (child !== loader) {
       recordContainer.removeChild(child);
-    } else {
-      break;
     }
-  }
-  return { recordContainer, loader }
-}
+  });
+
+  return { recordContainer, loader };
+};
 
 const reRender = () => {
   setTimeout(async () => {
-    await loadAndDisplayRecords();
     window.calendar.removeAllEvents();
+    await loadAndDisplayRecords();
     window.calendar.render();
-  }, 1000)
-}
+  }, 1000);
+};
 
 const getEventFormat = (data) => {
-  const startDate = new Date(data["sleep_timestamp"])
-      const endDate = new Date(data["wake_timestamp"])
+  const startDate = new Date(data["sleep_timestamp"]);
+  const endDate = new Date(data["wake_timestamp"]);
 
-      const start = startDate.toISOString();
-      const end = endDate.toISOString();
+  const { durationString, titleWithDuration } = getDurationInfo(startDate, endDate);
 
-      const { durationString, titleWithDuration } = getDurationInfo(startDate, endDate);
-
-      const formattedDate = `${startDate.getHours()}:${startDate.getMinutes()} (${startDate.getMonth() + 1}/${startDate.getDate()})`;
-      const formattedDateEnd = `${endDate.getHours()}:${endDate.getMinutes()} (${endDate.getMonth() + 1}/${endDate.getDate()})`;
-      const result = {
-        title: titleWithDuration,
-        start: start,
-        end: end,
-        startDate: formattedDate,
-        endDate: formattedDateEnd,
-        duration: durationString,
-        id: data["id"]
-      }
-      return result;
-}
-
+  return {
+    title: titleWithDuration,
+    start: startDate.toISOString(),
+    end: endDate.toISOString(),
+    startDate: formatDateTime(startDate),
+    endDate: formatDateTime(endDate),
+    duration: durationString,
+    id: data["id"]
+  };
+};
+const formatDateTime = (date) => {
+  return `${date.getHours()}:${date.getMinutes()} (${date.getMonth() + 1}/${date.getDate()})`;
+};
 const getDurationInfo = (startDate, endDate) => {
-  const title = "Sleep";
   const durationMs = endDate - startDate;
   const hours = Math.floor(durationMs / (1000 * 60 * 60));
   const minutes = Math.floor((durationMs % (1000 * 60 * 60)) / (1000 * 60));
   const seconds = Math.floor((durationMs % (1000 * 60)) / 1000);
   const durationString = `${hours} hours ${minutes} minutes ${seconds} seconds`;
-  const titleWithDuration = `${title} (${durationString})`;
-  return { durationString, titleWithDuration }
-}
+  const titleWithDuration = `Sleep (${durationString})`;
+  return { durationString, titleWithDuration };
+};
 
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -66,7 +61,7 @@ document.addEventListener('DOMContentLoaded', function () {
     headerToolbar: {
       left: 'prev,next today',
       center: 'title',
-      right: 'timeGridWeek,timeGridDay'
+      right: 'timeGridWeek,timeGridDay,list'
     },
     selectable: true,
     dateClick: function (info) {
@@ -80,14 +75,26 @@ document.addEventListener('DOMContentLoaded', function () {
   window.calendar = calendar
 
   setTimeout(async () => {
+    setDefaultMonth();
     await loadAndDisplayRecords();
     getAnalyticsData(window.userid)
+    document.getElementById('selectedMonth').addEventListener('change', function () {
+      const selectedMonth = this.value;
+      getAnalyticsData(window.userid);
+    });
   }, 1000)
 });
 
+const setDefaultMonth = () => {
+  const currentDate = new Date();
+  const currentYear = currentDate.getFullYear();
+  const currentMonth = (currentDate.getMonth() + 1).toString().padStart(2, '0');
+  document.getElementById('selectedMonth').value = `${currentYear}-${currentMonth}`;
+};
+
 const loadAndDisplayRecords = async () => {
   const { recordContainer, loader } = resetList();
-  const { doc, collection, getDocs,query, orderBy } = window.firestore;
+  const { doc, collection, getDocs, query, orderBy } = window.firestore;
   var sleepCollection = collection(
     doc(
       collection(db, "users"),
@@ -111,6 +118,7 @@ const loadAndDisplayRecords = async () => {
   for (let i = 0; i < sleeps.length; i++) {
     const data = sleeps[i]
     if (data["wake_timestamp"] == undefined) {
+      console.log(data);
       continue;
     }
     const event = getEventFormat(data);
@@ -127,178 +135,149 @@ const loadAndDisplayRecords = async () => {
 
   loader.style.display = "none";
 }
-
-const renderRecordContainer = (evt, rcdContainer) => {
+const renderRecordContainer = (event, recordContainer) => {
   const evtContainer = document.createElement("div");
-  evtContainer.addEventListener("click", () => {
-    window.selectedRecord = evt;
-  });
-  evtContainer.innerHTML = `
-  <div>
-    <span>Start: <span><span>${evt.startDate}</span>
-    </div>
-    <div>
-    <span>End: <span><span>${evt.endDate}</span>
-    </div>
-    <div>
-    <span>Duration: <span><span>${evt.duration}</span>
-    </div>
-    <div style="position: absolute; top: 0; right: 0; height: 20px; width: 50%; display:flex; justify-content: space-evenly">
-      <button onclick="showEditModal()">Edit</button>
-      <button>Delete</button>
-    </div>
-  `
-
-  evtContainer.style.position = "relative"
   evtContainer.classList.add("sleep_record");
-  rcdContainer.appendChild(evtContainer);
-
-}
+  evtContainer.style.position = "relative";
+  evtContainer.innerHTML = `
+    <div>Start: <span>${event.startDate}</span></div>
+    <div>End: <span>${event.endDate}</span></div>
+    <div>Duration: <span>${event.duration}</span></div>
+    <div style="position: absolute; top: 0; right: 0; height: 20px; width: 50%; display: flex; justify-content: space-evenly">
+      <button onclick="showEditModal()">Edit</button>
+      <button onclick="confirmDelete()">Delete</button>
+    </div>
+  `;
+  evtContainer.addEventListener("click", () => {
+    window.selectedRecord = event;
+  });
+  recordContainer.appendChild(evtContainer);
+};
 
 const showEditModal = () => {
-  const modal = document.getElementById("edit-modal")
+  const modal = document.getElementById("edit-modal");
   modal.style.display = "flex";
-  const sleepInput = document.getElementById("sleep_time_input")
-  const wakeInput = document.getElementById("wake_time_input")
-  const sleepDateInput = document.getElementById("sleep_date_input")
-  const wakeDateInput = document.getElementById("wake_date_input")
+  const sleepInput = document.getElementById("sleep_time_input");
+  const wakeInput = document.getElementById("wake_time_input");
+  const sleepDateInput = document.getElementById("sleep_date_input");
+  const wakeDateInput = document.getElementById("wake_date_input");
+
   setTimeout(() => {
     const record = window.selectedRecord;
     sleepInput.value = record.startDate.split(" ")[0];
     wakeInput.value = record.endDate.split(" ")[0];
 
-    // Convert start and end dates to Date objects
     const startDate = new Date(record.start);
     const endDate = new Date(record.end);
 
-    // Format dates as YYYY-MM-DD for input values
-    const startDateFormat = startDate.toISOString().split("T")[0];
-    const endDateFormat = endDate.toISOString().split("T")[0];
-    sleepDateInput.value = startDateFormat;
-    wakeDateInput.value = endDateFormat;
+    sleepDateInput.value = startDate.toISOString().split("T")[0];
+    wakeDateInput.value = endDate.toISOString().split("T")[0];
 
-    // Parse hours and minutes from input values
     const sleepTime = sleepInput.value.split(":");
     const wakeTime = wakeInput.value.split(":");
 
-    // Set hours and minutes to date objects
     startDate.setHours(parseInt(sleepTime[0], 10), parseInt(sleepTime[1], 10), 0, 0);
     endDate.setHours(parseInt(wakeTime[0], 10), parseInt(wakeTime[1], 10), 0, 0);
   }, 1000);
-}
+};
+
 const closeEditModal = () => {
-  const modal = document.getElementById("edit-modal")
-  modal.style.display = "none";
-}
+  document.getElementById("edit-modal").style.display = "none";
+};
 
-const d = new Date();
-let time = d.getTime();
+// Function to save the edited record
+const saveEdit = async () => {
+  const sleepInput = document.getElementById("sleep_time_input").value;
+  const wakeInput = document.getElementById("wake_time_input").value;
+  const sleepDateInput = document.getElementById("sleep_date_input").value;
+  const wakeDateInput = document.getElementById("wake_date_input").value;
 
-// document.getElementById('currentDate').innerHTML = d.toDateString();
+  const startDate = new Date(`${sleepDateInput}T${sleepInput}:00`);
+  const endDate = new Date(`${wakeDateInput}T${wakeInput}:00`);
 
+  const { doc, updateDoc, collection } = window.firestore;
+  const db = window.db;
 
+  await updateDoc(doc(collection(doc(collection(db, "users"), window.userid), "sleeps"), window.selectedRecord.id), {
+    sleep_timestamp: startDate.getTime(),
+    wake_timestamp: endDate.getTime(),
+    sleep: sleepInput,
+    wake: wakeInput
+  });
 
+  closeEditModal();
+  reRender();
+  getAnalyticsData(window.userid);
+};
 
-document.getElementById("recordSleep").addEventListener("click", async function () {
+document.getElementById("recordSleep").addEventListener("click", async () => {
   const sleepDate = new Date();
-  let timeContainer = document.getElementById("currentSleepTime")
-  timeContainer.innerHTML = sleepDate.getHours() + ":" + sleepDate.getMinutes()
+  document.getElementById("currentSleepTime").innerHTML = `${sleepDate.getHours()}:${sleepDate.getMinutes()}`;
 
-  const { doc, setDoc, collection, addDoc, updateDoc } = window.firestore;
-  const db = window.db
-  const result = await addDoc(
-    collection(
-      doc(
-        collection(db, "users"),
-        window.userid
-      ),
-      "sleeps"
-    ),
-    {
-      sleep: sleepDate.getHours() + ":" + sleepDate.getMinutes(),
-      sleep_timestamp: sleepDate.getTime()
-    });
-  await updateDoc(doc(
-    collection(db, "users"),
-    window.userid
-  ),
-    {
-      current_id: result.id
-    }
-  )
-  document.getElementById("currentWakeTime").innerHTML = ""
-})
+  const { addDoc, collection, doc, updateDoc } = window.firestore;
+  const db = window.db;
+  const result = await addDoc(collection(doc(collection(db, "users"), window.userid), "sleeps"), {
+    sleep: `${sleepDate.getHours()}:${sleepDate.getMinutes()}`,
+    sleep_timestamp: sleepDate.getTime()
+  });
 
-document.getElementById("recordWake").addEventListener("click", async function () {
+  await updateDoc(doc(collection(db, "users"), window.userid), { current_id: result.id });
+  document.getElementById("currentWakeTime").innerHTML = "";
+});
+
+document.getElementById("recordWake").addEventListener("click", async () => {
   const sleepDate = new Date();
-  let timeContainer = document.getElementById("currentWakeTime")
-  timeContainer.innerHTML = sleepDate.getHours() + ":" + sleepDate.getMinutes()
-  const { doc, setDoc, updateDoc, collection, getDoc } = window.firestore
+  document.getElementById("currentWakeTime").innerHTML = `${sleepDate.getHours()}:${sleepDate.getMinutes()}`;
 
-  const userDoc = doc(
-    collection(db, "users"),
-    window.userid
-  )
+  const { doc, updateDoc, collection, getDoc } = window.firestore;
+  const db = window.db;
+  const userDoc = doc(collection(db, "users"), window.userid);
+  const userSnap = await getDoc(userDoc);
+  const id = userSnap.data().current_id;
 
-  const userSnap = await getDoc(userDoc)
-  const userData = userSnap.data()
-  const id = userData.current_id
-
-  await updateDoc(
-    doc(
-      collection(
-        doc(
-          collection(db, "users"),
-          window.userid
-        ),
-        "sleeps"
-      ),
-      id
-    ), {
-    wake: sleepDate.getHours() + ":" + sleepDate.getMinutes(),
+  await updateDoc(doc(collection(doc(collection(db, "users"), window.userid), "sleeps"), id), {
+    wake: `${sleepDate.getHours()}:${sleepDate.getMinutes()}`,
     wake_timestamp: sleepDate.getTime()
   });
 
-  reRender()
-})
+  setTimeout(reRender, 1000);
+});
 
+const onRecordTab = async () => {
+  const { doc, getDoc, collection } = window.firestore;
+  const db = window.db;
 
-async function onRecordTab() {
-  const { doc, getDoc, setDoc, updateDoc, collection } = window.firestore
-  const db = window.db
+  const userDoc = doc(collection(db, "users"), window.userid);
+  const userSnap = await getDoc(userDoc);
+  const id = userSnap.data().current_id;
 
-  const userDoc = doc(
-    collection(db, "users"),
-    window.userid
-  )
+  const sleepDocRef = doc(collection(doc(collection(db, "users"), window.userid), "sleeps"), id);
+  const docSnap = await getDoc(sleepDocRef);
 
-  const userSnap = await getDoc(userDoc)
-  const userData = userSnap.data()
-  const id = userData.current_id
-
-  const sleepDocRef = doc(
-    collection(
-      doc(
-        collection(db, "users"),
-        window.userid
-      ),
-      "sleeps"
-    ),
-    id
-  )
-  const docSnap = await getDoc(sleepDocRef)
-  let data = null
   if (docSnap.exists()) {
-    data = docSnap.data();
-  } else {
-    // docSnap.data() will be undefined in this case
-    return
+    const data = docSnap.data();
+    document.getElementById("currentSleepTime").innerHTML = data.sleep;
+    if (data.wake !== undefined) {
+      document.getElementById("currentWakeTime").innerHTML = data.wake;
+    }
   }
-  let sleepContainer = document.getElementById("currentSleepTime")
-  sleepContainer.innerHTML = data.sleep
-  if (data.wake == undefined) {
-    return;
+};
+
+// Function to confirm deletion
+const confirmDelete = async () => {
+  const confirmation = confirm("Are you sure you want to delete this record?");
+  if (confirmation) {
+   await deleteRecord();
+   closeEditModal();
+  reRender();
+  getAnalyticsData(window.userid);
   }
-  let wakeContainer = document.getElementById("currentWakeTime")
-  wakeContainer.innerHTML = data.wake
-}
+};
+
+// Function to delete the record
+const deleteRecord = async () => {
+  const { doc, deleteDoc, collection } = window.firestore;
+  const db = window.db;
+
+  await deleteDoc(doc(collection(doc(collection(db, "users"), window.userid), "sleeps"), window.selectedRecord.id));
+};

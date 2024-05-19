@@ -98,7 +98,7 @@ body {
     /* border: 1px solid rebeccapurple; */
     padding: 1em;
     border-radius: 1em;
-    background-color: #8284f954;
+    background-color: #8284f9c1;
     box-shadow: 10px 10px 5px 0px rgba(0, 0, 0, 0.45);
     -webkit-box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.45);
     -moz-box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.45);
@@ -280,10 +280,33 @@ body {
 }
 
 .analytics{
-    height: 100vh;
     padding: 100px 200px;
     box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
 }
+
+.analytics canvas{
+    max-height: 350px;
+    border-radius: 20px;
+}
+
+
+#myChart{
+    background-color: rgb(228, 228, 228);
+}
+
+#health{
+    background-color: rgb(228, 228, 228);
+}
+
+.analytics input{
+    min-height: 40px;
+    justify-self: center;
+    align-self: center;
+}
+
 
 
 /* #myChart{
