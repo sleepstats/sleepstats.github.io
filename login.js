@@ -24,25 +24,25 @@ window.auth = auth;
 window.SignIn = signInWithEmailAndPassword;
 
 
-function signIn(event) {
-  event.preventDefault(); // Prevent form submission
+// function signIn(event) {
+//   event.preventDefault(); // Prevent form submission
 
-  var email = document.getElementById("email").value;
-  var password = document.getElementById("password").value;
+//   var email = document.getElementById("email").value;
+//   var password = document.getElementById("password").value;
 
-  window.SignIn(window.auth, email, password)
+//   window.SignIn(window.auth, email, password)
 
-    .then((userCredential) => {
-      // Signed in 
-      const user = userCredential.user;
-      console.log(user);
-      alert("signed in!");
-      window.location.href = "./assets/succ/succ.html";
-      // ...
-})
-    .catch((error) => {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      console.log(errorCode, errorMessage);
-    });
-  }
+//     .then((userCredential) => {
+//       // Signed in 
+//       const user = userCredential.user;
+//       console.log(user);
+//       alert("signed in!");
+//       window.location.href = "./assets/succ/succ.html";
+//       // ...
+// })
+//     .catch((error) => {
+//       const errorCode = error.code;
+//       const errorMessage = error.message;
+//       console.log(errorCode, errorMessage);
+//     });
+//   }

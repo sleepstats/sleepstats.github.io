@@ -37,9 +37,11 @@ const getEventFormat = (data) => {
     id: data["id"]
   };
 };
+
 const formatDateTime = (date) => {
   return `${date.getHours()}:${date.getMinutes()} (${date.getMonth() + 1}/${date.getDate()})`;
 };
+
 const getDurationInfo = (startDate, endDate) => {
   const durationMs = endDate - startDate;
   const hours = Math.floor(durationMs / (1000 * 60 * 60));
@@ -134,7 +136,8 @@ const loadAndDisplayRecords = async () => {
   });
 
   loader.style.display = "none";
-}
+};
+
 const renderRecordContainer = (event, recordContainer) => {
   const evtContainer = document.createElement("div");
   evtContainer.classList.add("sleep_record");
@@ -164,8 +167,15 @@ const showEditModal = () => {
 
   setTimeout(() => {
     const record = window.selectedRecord;
-    sleepInput.value = record.startDate.split(" ")[0];
-    wakeInput.value = record.endDate.split(" ")[0];
+    console.log(record)
+    const formatTime = (time) => {
+      return time.padStart(2, '0');
+    };
+
+    const sleepHour = record.startDate.split(" ")[0].split(":")
+    const  wakeHour =record.endDate.split(" ")[0].split(":")
+    sleepInput.value = formatTime(sleepHour[0]) + ":" + formatTime(sleepHour[1]);;
+    wakeInput.value = formatTime(wakeHour[0]) + ":" + formatTime(wakeHour[1]);;
 
     const startDate = new Date(record.start);
     const endDate = new Date(record.end);
@@ -176,8 +186,15 @@ const showEditModal = () => {
     const sleepTime = sleepInput.value.split(":");
     const wakeTime = wakeInput.value.split(":");
 
-    startDate.setHours(parseInt(sleepTime[0], 10), parseInt(sleepTime[1], 10), 0, 0);
-    endDate.setHours(parseInt(wakeTime[0], 10), parseInt(wakeTime[1], 10), 0, 0);
+    const formattedSleepTime = formatTime(sleepTime[0]) + ":" + formatTime(sleepTime[1]);
+    const formattedWakeTime = formatTime(wakeTime[0]) + ":" + formatTime(wakeTime[1]);
+
+    startDate.setHours(parseInt(formattedSleepTime.split(":")[0], 10), parseInt(formattedSleepTime.split(":")[1], 10), 0, 0);
+    endDate.setHours(parseInt(formattedWakeTime.split(":")[0], 10), parseInt(formattedWakeTime.split(":")[1], 10), 0, 0);
+
+    // Assuming sleepInput and wakeInput are meant to hold formatted time strings
+    sleepInput.value = formattedSleepTime;
+    wakeInput.value = formattedWakeTime;
   }, 1000);
 };
 
@@ -243,34 +260,16 @@ document.getElementById("recordWake").addEventListener("click", async () => {
   setTimeout(reRender, 1000);
 });
 
-const onRecordTab = async () => {
-  const { doc, getDoc, collection } = window.firestore;
-  const db = window.db;
 
-  const userDoc = doc(collection(db, "users"), window.userid);
-  const userSnap = await getDoc(userDoc);
-  const id = userSnap.data().current_id;
-
-  const sleepDocRef = doc(collection(doc(collection(db, "users"), window.userid), "sleeps"), id);
-  const docSnap = await getDoc(sleepDocRef);
-
-  if (docSnap.exists()) {
-    const data = docSnap.data();
-    document.getElementById("currentSleepTime").innerHTML = data.sleep;
-    if (data.wake !== undefined) {
-      document.getElementById("currentWakeTime").innerHTML = data.wake;
-    }
-  }
-};
 
 // Function to confirm deletion
 const confirmDelete = async () => {
   const confirmation = confirm("Are you sure you want to delete this record?");
   if (confirmation) {
-   await deleteRecord();
-   closeEditModal();
-  reRender();
-  getAnalyticsData(window.userid);
+    await deleteRecord();
+    closeEditModal();
+    reRender();
+    getAnalyticsData(window.userid);
   }
 };
 
