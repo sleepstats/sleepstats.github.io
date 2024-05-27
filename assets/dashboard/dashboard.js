@@ -189,8 +189,6 @@ const showEditModal = () => {
     const formattedSleepTime = formatTime(sleepTime[0]) + ":" + formatTime(sleepTime[1]);
     const formattedWakeTime = formatTime(wakeTime[0]) + ":" + formatTime(wakeTime[1]);
 
-    startDate.setHours(parseInt(formattedSleepTime.split(":")[0], 10), parseInt(formattedSleepTime.split(":")[1], 10), 0, 0);
-    endDate.setHours(parseInt(formattedWakeTime.split(":")[0], 10), parseInt(formattedWakeTime.split(":")[1], 10), 0, 0);
 
     // Assuming sleepInput and wakeInput are meant to hold formatted time strings
     sleepInput.value = formattedSleepTime;
